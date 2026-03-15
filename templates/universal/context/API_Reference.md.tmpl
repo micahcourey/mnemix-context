@@ -1,0 +1,76 @@
+# {{project.name}} - API Reference
+
+> API architecture overview for {{project.full_name}}.
+> **Endpoint data** is in [endpoints.jsonl](endpoints.jsonl) for efficient lookups.
+
+## Overview
+
+**API Style**: {{tech.backend.api_style}}
+**Runtime**: {{tech.backend.runtime}}
+**Framework**: {{tech.backend.framework}}
+
+## Data File
+
+| File | Contains | Format |
+|------|----------|--------|
+| [endpoints.jsonl](endpoints.jsonl) | All endpoints with method, path, auth, privilege | JSONL |
+
+## Base URLs
+
+| Environment | Base URL |
+|-------------|----------|
+| Local | `http://localhost:3000` |
+| Dev | <!-- TODO: dev URL --> |
+| Staging | <!-- TODO: staging URL --> |
+| Production | <!-- TODO: production URL --> |
+
+## Authentication
+
+All endpoints require authentication unless marked as `public`.
+
+**Method**: {{tech.auth.strategy}}
+**Token Type**: {{tech.auth.token_type}}
+
+```
+Authorization: Bearer <token>
+```
+
+## Common Response Patterns
+
+### Pagination
+
+```json
+{
+  "data": [],
+  "pagination": {
+    "page": 1,
+    "pageSize": 25,
+    "totalPages": 10,
+    "totalRecords": 250
+  }
+}
+```
+
+### Error Response
+
+```
+{{patterns.error_format}}
+```
+
+### Standard Headers
+
+| Header | Required | Description |
+|--------|----------|-------------|
+| `Authorization` | Yes | Bearer token |
+| `Content-Type` | Yes | `application/json` |
+| `X-Request-ID` | No | Correlation ID for tracing |
+
+## How to Query
+
+To find endpoints for a service or resource:
+```
+grep "service-name" context/endpoints.jsonl
+grep "GET" context/endpoints.jsonl
+```
+
+> **Note**: Populate `endpoints.jsonl` using the `@Setup-Wizard` agent or by scanning route files.

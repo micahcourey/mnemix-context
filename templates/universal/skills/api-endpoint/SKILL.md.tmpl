@@ -1,0 +1,110 @@
+---
+name: api-endpoint
+description: Generate complete {{tech.backend.api_style}} API endpoints for {{tech.backend.framework}}-based services with authentication, authorization, audit logging, and error handling.
+---
+
+# API Endpoint Generator
+
+## Context Files
+
+Consult [AGENTS.md](AGENTS.md) for the project knowledge routing table.
+**For this skill, prioritize**: Security patterns (L2, auth middleware), coding standards (L2, API design conventions), then access control, database schema, and API reference context files (L3). Load companion data files (`.jsonl`, `.yaml`) for endpoint and schema lookups.
+
+## Instructions
+
+### Step 1: Discovery
+
+Before generating code:
+1. **Find similar endpoints** - Search for existing routes in the codebase
+2. **Review middleware patterns** - Check auth, permissions, audit middleware usage
+3. **Check permission types** - Find permissions/privileges in the codebase
+4. **Review database schema** - Understand table structure{{#if patterns.isolation.enabled}} and {{patterns.isolation.field}} isolation{{/if}}
+
+### Step 2: Generate Endpoint
+
+Every endpoint MUST include the full middleware chain:
+
+```
+{{patterns.auth.backend_chain}}
+```
+
+**Middleware components:**
+- Authenticate: `{{patterns.auth.authenticate}}`
+- Authorize: `{{patterns.auth.authorize}}`
+- Audit: `{{patterns.auth.audit}}`
+
+### Step 3: Generate Controller
+
+Controllers should:
+- Extract and validate request parameters
+- Call service layer for business logic
+{{#if patterns.isolation.enabled}}
+- Always pass `{{patterns.isolation.field}}` for data isolation
+{{/if}}
+- Include audit trail fields ({{patterns.db.audit_columns}})
+- Use structured error responses:
+```
+{{patterns.error_format}}
+```
+- Log errors with context (never log sensitive data: {{domain.sensitive_data}})
+
+### Step 4: Generate Service
+
+Services should:
+- Contain all business logic
+- Use parameterized queries (never string concatenation)
+{{#if patterns.isolation.enabled}}
+- Always filter by `{{patterns.isolation.field}}` ({{patterns.isolation.description}})
+{{/if}}
+{{#if patterns.db.soft_delete}}
+- Use soft delete pattern (filter by `{{patterns.db.soft_delete_col}} IS NULL`)
+{{/if}}
+- Include audit columns: {{patterns.db.audit_columns}}
+
+### Step 5: Generate Types
+
+Create TypeScript interfaces/types for:
+- Request DTOs (create, update)
+- Response DTOs (explicit field selection)
+- Entity types matching database schema
+
+### Step 6: Generate Validation
+
+Add request validation:
+- Required field checks
+- Type validation
+- Length/range constraints
+- Custom business rule validation
+
+### Step 7: Generate Tests
+
+Create tests covering:
+- Authentication required (401 without token)
+- Authorization required (403 without permission)
+{{#if patterns.isolation.enabled}}
+- Data isolation (403 for cross-scope access)
+{{/if}}
+- Validation errors (400 for invalid input)
+- Success scenarios (200/201 with correct data)
+- Error handling (500 with proper error format)
+
+Target: {{conventions.coverage_target}}%+ coverage
+
+## Naming Conventions
+
+- **Files**: kebab-case (`resource-name.routes.ts`, `resource-name.controller.ts`)
+- **Tables**: {{patterns.db.table_naming}}
+- **Services**: {{conventions.naming.services}}
+
+## Checklist
+
+Before marking complete:
+- [ ] Full middleware chain on every route
+- [ ] Parameterized queries (no SQL injection)
+{{#if patterns.isolation.enabled}}
+- [ ] `{{patterns.isolation.field}}` filtering on all queries
+{{/if}}
+- [ ] Audit trail columns included
+- [ ] Error handling with structured responses
+- [ ] No sensitive data in logs
+- [ ] Unit tests with {{conventions.coverage_target}}%+ coverage

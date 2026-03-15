@@ -1,0 +1,37 @@
+# Database schema for {{project.name}}
+# Populate via @Setup-Wizard agent or from migration/ORM files
+#
+# Structure: databases → tables → columns
+# Mark sensitive columns for compliance awareness
+
+databases:
+  # Example database entry:
+  #
+  # - name: primary_db
+  #   engine: PostgreSQL        # PostgreSQL | MySQL | Aurora | DynamoDB | etc.
+  #   purpose: Main application database
+  #   tables:
+  #     - name: users
+  #       description: User accounts and profiles
+  #       columns:
+  #         - { name: id, type: bigint, pk: true }
+  #         - { name: email, type: varchar(255), sensitive: PII }
+  #         - { name: name, type: varchar(255), sensitive: PII }
+  #         - { name: role_id, type: bigint, fk: roles.id }
+  #         - { name: created_at, type: timestamp }
+  #         - { name: updated_at, type: timestamp }
+  #       indexes:
+  #         - { name: users_pkey, columns: [id], unique: true }
+  #         - { name: idx_users_email, columns: [email], unique: true }
+  #       relationships:
+  #         - { target: roles, type: many_to_one, fk: role_id }
+  #
+  #     - name: roles
+  #       description: User role definitions
+  #       columns:
+  #         - { name: id, type: bigint, pk: true }
+  #         - { name: code, type: varchar(50) }
+  #         - { name: description, type: varchar(255) }
+  #       indexes:
+  #         - { name: roles_pkey, columns: [id], unique: true }
+  #       relationships: []

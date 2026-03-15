@@ -1,0 +1,163 @@
+---
+name: query-optimizer
+description: Analyze and optimize slow database queries with EXPLAIN ANALYZE interpretation and index recommendations. Use when optimizing queries or reviewing database performance.
+---
+
+# Database Query Optimizer
+
+Run query analysis: `scripts/analyze-query.py <query_file>`
+
+See [index reference](references/INDEX-STRATEGIES.md) for optimization patterns.
+
+## Context Files
+
+Consult [AGENTS.md](AGENTS.md) for the project knowledge routing table.
+**For this skill, prioritize**: Database schema and companion `schema.yaml` for table structures, indexes, and relationships.
+
+## Instructions
+
+Analyze and optimize slow database queries, providing EXPLAIN ANALYZE output interpretation, index recommendations, and query refactoring.
+
+## Analysis Steps
+
+### 1. Analyze Query Structure
+- Identify tables involved
+- Check JOIN operations
+- Review WHERE clause selectivity
+- Identify subqueries
+- Check for N+1 query patterns
+
+### 2. Review Table Schemas
+- Find table definitions in migration files
+- Check existing indexes
+- Identify primary/foreign keys
+- Review data volume estimates
+- Check for audit columns (created_at, updated_at)
+
+### 3. EXPLAIN ANALYZE Interpretation
+
+{{#if tech_stack.databases.primary_type}}
+#### For {{tech_stack.databases.primary_type}}
+{{/if}}
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) 
+{your_query_here};
+```
+
+**Key Metrics to Review:**
+- **Seq Scan**: Full table scans (bad for large tables)
+- **Index Scan vs Index Only Scan**: Index usage effectiveness
+- **Rows**: Estimated vs actual row counts
+- **Loops**: Number of iterations (high = problem)
+- **Planning Time**: Query plan generation time
+- **Execution Time**: Actual query execution time
+- **Buffers**: Shared/local/temp buffer usage
+
+## Common Issues & Solutions
+
+### Issue: Sequential Scan on Large Table
+
+```sql
+-- ❌ Missing index causes full table scan
+SELECT * FROM resources WHERE tenant_id = 123;
+
+-- ✅ Solution: Add index
+CREATE INDEX idx_resources_tenant_id 
+ON resources(tenant_id);
+```
+
+### Issue: Expensive COUNT on Large Table
+
+```sql
+-- ❌ Slow - counts all rows
+SELECT COUNT(*) FROM actions WHERE status = 'PENDING';
+
+-- ✅ Use partial index or materialized view
+CREATE INDEX idx_pending_actions 
+ON actions(status) 
+WHERE status = 'PENDING';
+```
+
+### Issue: Inefficient JOINs
+
+```sql
+-- ❌ No index on join column
+SELECT r.*, t.name
+FROM resources r
+JOIN tenants t ON r.tenant_id = t.id;
+
+-- ✅ Ensure indexes on join columns
+CREATE INDEX idx_resources_tenant 
+ON resources(tenant_id);
+```
+
+### Issue: Over-fetching Data
+
+```sql
+-- ❌ Selecting all columns
+SELECT * FROM resources WHERE tenant_id = 123;
+
+-- ✅ Select only needed columns
+SELECT id, name, status, created_at 
+FROM resources 
+WHERE tenant_id = 123;
+```
+
+## Index Recommendations
+
+### When to Add Indexes
+- Columns in WHERE clauses
+- JOIN columns
+- ORDER BY columns
+- Columns with high selectivity
+
+### Index Types
+- **B-tree** (default): Equality and range queries
+- **GIN**: JSONB, arrays, full-text search
+- **Partial**: Filtered subset of rows
+- **Composite**: Multiple columns together
+
+{{#if patterns.isolation.enabled}}
+### Data Isolation Patterns
+
+Always include tenant/isolation filtering:
+```sql
+-- ✅ Required: {{patterns.isolation.field}} filter for data isolation
+SELECT * FROM resources 
+WHERE id = $1 
+  AND {{patterns.isolation.field}} = $2;
+
+-- Common composite index
+CREATE INDEX idx_tablename_tenant 
+ON tablename({{patterns.isolation.field}}, created_at);
+```
+{{/if}}
+
+## Output Format
+
+```markdown
+## Query Analysis
+
+**Original Query**: [show query]
+**Current Time**: X ms
+**Target Time**: Y ms
+
+### Issues Found
+1. 🔴 [Critical issue]
+2. 🟠 [Performance issue]
+3. 🟡 [Improvement opportunity]
+
+### Recommendations
+1. Add index on X column
+2. Refactor subquery to JOIN
+3. Add LIMIT clause
+
+### Optimized Query
+[show optimized query]
+
+### Index Statements
+[CREATE INDEX statements]
+
+**Estimated Improvement**: 80% reduction in execution time
+```

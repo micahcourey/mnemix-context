@@ -1,0 +1,42 @@
+# {{project.name}} - Database Schema Overview
+
+> Database architecture overview for {{project.full_name}}.
+> **Schema data** is in [schema.yaml](schema.yaml) for structured lookups.
+
+## Data File
+
+| File | Contains | Format |
+|------|----------|--------|
+| [schema.yaml](schema.yaml) | Databases, tables, columns, relationships, sensitive fields | YAML |
+
+## Sensitive Data
+
+> **Compliance**: {{domain.compliance}}
+> **Sensitive Data Types**: {{domain.sensitive_data}}
+
+Columns flagged as sensitive in `schema.yaml` must never appear in logs or error responses.
+
+## Audit Columns
+
+Standard audit columns present on all tables: {{patterns.db.audit_columns}}
+
+{{#if patterns.db.soft_delete}}
+## Soft Delete
+
+Tables use soft delete via the `{{patterns.db.soft_delete_col}}` column.
+Always filter with `WHERE {{patterns.db.soft_delete_col}} IS NULL` unless explicitly querying deleted records.
+{{/if}}
+
+## Conventions
+
+- **Table naming**: {{patterns.db.table_naming}}
+- **Migration tool**: {{patterns.db.migration_tool}}
+
+## How to Query
+
+To find a table or column in the schema:
+```bash
+grep "table_name" .ai/context/schema.yaml
+```
+
+> **Note**: Populate `schema.yaml` using the `@Setup-Wizard` agent or from migration/ORM files.

@@ -1,0 +1,68 @@
+# {{project.name}} - Domain Glossary
+
+> Business terminology and domain language for {{project.full_name}}.
+> **Term data** is in [glossary.jsonl](glossary.jsonl) for efficient lookups.
+
+## Purpose
+
+This glossary ensures AI tools use correct domain language when generating code, documentation, and tests. It prevents generic or incorrect terminology from appearing in your project.
+
+## Data File
+
+| File | Contains | Format |
+|------|----------|--------|
+| [glossary.jsonl](glossary.jsonl) | All terms: acronyms, entities, business terms, roles | JSONL |
+
+## Industry & Compliance
+
+**Domain**: {{domain.industry}}
+{{#if domain.compliance}}
+**Compliance**: {{domain.compliance}}
+{{/if}}
+{{#if domain.sensitive_data}}
+**Sensitive Data Types**: {{domain.sensitive_data}}
+{{/if}}
+
+{{#if domain.models}}
+## Business Models / Programs
+
+Active models/programs: {{domain.models}}
+{{/if}}
+
+## How to Populate
+
+Unlike other context files, the domain glossary often requires **input from subject matter experts (SMEs)** — product owners, business analysts, or domain experts who understand the business vocabulary.
+
+**Recommended process:**
+1. **Start with code** — the bootstrap agent extracts terms from variable names, comments, enums, and configs
+2. **Review with SMEs** — share the extracted terms with your product owner or BA for corrections and additions
+3. **Import from docs** — paste relevant sections from requirements documents, SOWs, or wikis
+4. **Iterate** — update as new domain concepts emerge during development
+
+> **Tip:** If you have an existing glossary document (Word, Confluence, wiki, SharePoint), paste its content below. The bootstrap agent can restructure it into JSONL records.
+
+## Domain Rules
+
+<!-- TODO: Document important business rules that affect code -->
+
+| Rule | Description | Enforcement |
+|------|-------------|-------------|
+| <!-- e.g., Data scoped to org --> | <!-- Users only see their data --> | <!-- API middleware, DB queries --> |
+
+## External References
+
+<!-- Link to authoritative domain documentation outside the codebase -->
+
+| Document | Location | Last Updated |
+|----------|----------|-------------|
+| <!-- e.g., Requirements Doc --> | <!-- link --> | <!-- date --> |
+
+## How to Query
+
+To look up a term or acronym:
+```
+grep "TERM" .ai/context/glossary.jsonl
+grep "acronym" .ai/context/glossary.jsonl
+```
+
+> **Note**: Terms marked `"needs_review": true` in the JSONL file need SME validation.

@@ -1,0 +1,58 @@
+{
+  "skill_name": "security-scan",
+  "evals": [
+    {
+      "id": 1,
+      "name": "detect-missing-auth",
+      "prompt": "Scan the following Express route for security issues:\n\nrouter.get('/api/users', controller.getUsers);\nrouter.post('/api/users', controller.createUser);\nrouter.delete('/api/users/:id', controller.deleteUser);",
+      "expected_output": "Agent identifies missing authentication, authorization, and audit middleware on all routes.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "finds-missing-auth",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "auth|authentication|verifyToken",
+          "description": "Identifies missing authentication middleware"
+        },
+        {
+          "id": "finds-missing-authz",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "authori[sz]ation|permission|privilege",
+          "description": "Identifies missing authorization/permission checks"
+        },
+        {
+          "id": "finds-missing-audit",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "audit|logging",
+          "description": "Identifies missing audit logging"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "detect-injection-risk",
+      "prompt": "Scan this code for security vulnerabilities:\n\nconst query = `SELECT * FROM users WHERE name = '${req.params.name}'`;\nconst result = await pool.query(query);",
+      "expected_output": "Agent identifies SQL injection vulnerability and recommends parameterized queries.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "finds-sql-injection",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "SQL injection|sql.injection|injection",
+          "description": "Identifies SQL injection vulnerability"
+        },
+        {
+          "id": "recommends-parameterized",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "parameteriz|prepared.statement|\\$[0-9]|placeholder",
+          "description": "Recommends parameterized queries or prepared statements"
+        }
+      ]
+    }
+  ]
+}

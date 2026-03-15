@@ -1,0 +1,123 @@
+# {{project.name}} - System Architecture
+
+> System components, boundaries, integrations, and data flows for {{project.full_name}}.
+
+---
+
+## Overview
+
+<!-- Describe the high-level architecture of your system -->
+<!-- TODO: Fill in your project's architecture details -->
+
+{{project.description}}
+
+---
+
+## Technology Stack
+
+{{tech.stack_table}}
+
+---
+
+## System Components
+
+<!-- List and describe your major system components/services -->
+<!-- Example structure below - replace with your actual components -->
+
+### Frontend Applications
+
+| Application | Description | Technology |
+|-------------|-------------|------------|
+| <!-- app-name --> | <!-- description --> | {{tech.frontend.framework}} |
+
+### Backend Services
+
+| Service | Description | Technology |
+|---------|-------------|------------|
+| <!-- service-name --> | <!-- description --> | {{tech.backend.framework}} |
+
+### Data Stores
+
+| Store | Type | Purpose |
+|-------|------|---------|
+{{tech.databases.list}}
+
+---
+
+## Infrastructure
+
+### Cloud Provider: {{tech.cloud.provider}}
+
+**Compute**: {{tech.cloud.compute}}
+**Key Services**: {{tech.cloud.services}}
+
+### Architecture Diagram
+
+<!-- Add a Mermaid diagram or link to an architecture image -->
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        UI[Frontend App]
+    end
+    
+    subgraph "API Layer"
+        GW[API Gateway]
+        API[API Services]
+    end
+    
+    subgraph "Data Layer"
+        DB[(Database)]
+    end
+    
+    UI --> GW --> API --> DB
+```
+
+---
+
+## Authentication & Authorization
+
+**Provider**: {{tech.auth.provider}}
+**Strategy**: {{tech.auth.strategy}}
+
+<!-- Describe your auth flow -->
+
+---
+
+## Data Flows
+
+<!-- Describe key data flows through your system -->
+
+### Request Flow
+1. Client sends request to API Gateway
+2. Auth middleware validates token
+3. Authorization check against roles/permissions
+4. Business logic processes request
+5. Response returned to client
+
+---
+
+## Environment Architecture
+
+<!-- Describe your environments (dev, staging, prod) -->
+
+| Environment | Purpose | URL |
+|-------------|---------|-----|
+| Development | Feature development and testing | <!-- url --> |
+| Staging | Pre-production validation | <!-- url --> |
+| Production | Live environment | <!-- url --> |
+
+---
+
+## Integration Points
+
+<!-- List external systems your project integrates with -->
+
+| System | Integration Type | Purpose |
+|--------|-----------------|---------|
+| <!-- system --> | <!-- REST/Event/File --> | <!-- purpose --> |
+
+---
+
+> **Note**: This file is a template. Fill in the sections above with your
+> project's actual architecture details. The more complete this file, the
+> better AI assistance you'll receive from the toolkit's agents and skills.

@@ -1,0 +1,286 @@
+# ============================================================================
+# Mnemix Context - Project Configuration
+# ============================================================================
+# This file is the SINGLE SOURCE OF TRUTH for customizing the toolkit to your
+# project. Fill in each section, then run `./setup/generate.sh` to render all
+# templates into your project directory.
+#
+# Quick start:
+#   1. Copy an example config from setup/examples/ as a starting point
+#   2. Edit the values below to match your project
+#   3. Run: ./setup/generate.sh
+#   4. Fill in your context files in context/
+#   5. Commit the generated files to your project
+#
+# Or use the AI bootstrap: ask @Setup-Wizard in VS Code Copilot Chat to
+# interview you and fill this config automatically.
+# ============================================================================
+
+# --------------------------------------------------------------------------
+# Project Identity
+# --------------------------------------------------------------------------
+project:
+  name: ""                          # e.g., "IDDOC", "SupplyChain", "FinTrack"
+  full_name: ""                     # e.g., "Innovation Center Data on Demand for Accountable Care"
+  description: ""                   # One-line description of the project
+  org_name: ""                      # e.g., "Acme", "Personal", "Open Source"
+  repo_url: ""                      # e.g., "github.com/tria/my-project"
+  jira_key: ""                      # e.g., "IDDOC", "SUPPLY", "FIN"
+
+# --------------------------------------------------------------------------
+# Technology Stack
+# --------------------------------------------------------------------------
+tech_stack:
+  frontend:
+    framework: ""                   # e.g., "Angular 18", "React 18", "Vue 3", "Next.js 14"
+    language: ""                    # e.g., "TypeScript 5.x", "JavaScript ES2022"
+    ui_library: ""                  # e.g., "Angular Material", "MUI", "Vuetify", "Tailwind"
+    state_management: ""            # e.g., "RxJS", "Redux Toolkit", "Pinia", "Zustand"
+    testing: ""                     # e.g., "Jasmine/Karma", "Vitest", "Jest + RTL"
+    component_prefix: ""            # e.g., "app", "my"
+
+  backend:
+    framework: ""                   # e.g., "Express", "FastAPI", "Spring Boot", "NestJS"
+    language: ""                    # e.g., "TypeScript", "Python 3.12", "Java 17", "Go"
+    runtime: ""                     # e.g., "Node.js 20", "Python 3.12", "JVM 17"
+    testing: ""                     # e.g., "Jest", "pytest", "JUnit 5"
+    api_style: ""                   # e.g., "REST", "GraphQL", "gRPC"
+
+  databases:                        # List all databases used
+    - name: ""                      # e.g., "Aurora PostgreSQL"
+      type: ""                      # "relational", "document", "key-value", "search", "analytics"
+      purpose: ""                   # e.g., "primary data store", "caching", "full-text search"
+
+  cloud:
+    provider: ""                    # e.g., "AWS", "Azure", "GCP", "On-Premise"
+    compute: ""                     # e.g., "Lambda + ECS Fargate", "Azure Functions", "Cloud Run"
+    key_services: []                # e.g., ["API Gateway", "S3", "CloudFront", "Bedrock"]
+
+  auth:
+    provider: ""                    # e.g., "Okta SSO", "Auth0", "Azure AD", "Keycloak"
+    strategy: ""                    # e.g., "JWT + RBAC", "OAuth2 + ABAC", "SAML + RBAC"
+    token_type: ""                  # e.g., "JWT", "opaque", "SAML assertion"
+
+  cicd:
+    platform: ""                    # e.g., "Jenkins", "GitHub Actions", "GitLab CI", "Azure DevOps"
+    secondary: ""                   # e.g., "AWS CodeBuild" (optional)
+    containerized: false            # true if using Docker/containers
+
+# --------------------------------------------------------------------------
+# Architecture Patterns (code examples your agents/skills will reference)
+# --------------------------------------------------------------------------
+patterns:
+
+  # Authentication & Authorization middleware chain
+  auth_middleware:
+    description: ""                 # e.g., "JWT verification + RBAC middleware chain"
+    backend_chain: |
+      # Paste your typical backend auth → authorize → audit → handler pattern here.
+      # Example (Express/Node.js):
+      # router.post('/api/resource',
+      #   authMiddleware.verifyToken,
+      #   permissionsMiddleware.checkRole('ADMIN'),
+      #   auditMiddleware.log('CREATE_RESOURCE'),
+      #   controller.createResource
+      # );
+    frontend_check: |
+      # Paste your typical frontend authorization check here.
+      # Example (Angular):
+      # const hasAccess = this.authService.hasPermission('EDIT_RESOURCE');
+    middleware_names:
+      authenticate: ""              # e.g., "authMiddleware.verifyTokenRetrieveUser"
+      authorize: ""                 # e.g., "permissionsMiddleware.validateRequiredPrivilege"
+      audit: ""                     # e.g., "auditUserActionMiddleware"
+
+  # Data isolation / multi-tenancy
+  data_isolation:
+    enabled: false                  # true if your app has multi-tenant data isolation
+    strategy: ""                    # e.g., "row-level filtering", "schema-per-tenant", "database-per-tenant"
+    isolation_field: ""             # e.g., "tenant_id", "org_id", "workspace_id"
+    description: ""                 # e.g., "All queries must filter by tenant_id for isolation"
+
+  # Error response format
+  error_format: |
+    # Your standard error response shape:
+    # { "error": string, "message": string, "statusCode": number }
+
+  # Database conventions
+  database_conventions:
+    table_naming: ""                # e.g., "SCREAMING_SNAKE_CASE", "snake_case", "PascalCase"
+    audit_columns: []               # e.g., ["created_at", "created_by", "updated_at", "updated_by"]
+    soft_delete: false              # true if using soft deletes
+    soft_delete_column: ""          # e.g., "deleted_at"
+    migration_tool: ""              # e.g., "Liquibase", "Flyway", "Prisma Migrate", "Alembic"
+
+# --------------------------------------------------------------------------
+# Domain & Product Context
+# --------------------------------------------------------------------------
+domain:
+  industry: ""                      # e.g., "Developer Tools", "SaaS", "Education", "Open Source"
+  sensitive_data_types: []          # e.g., ["PHI", "PII", "SSN"] or ["PCI", "financial records"]
+  compliance_frameworks: []         # Optional: e.g., ["SOC 2", "GDPR"]
+  key_entities: []                  # e.g., ["Agreement", "Participant", "Beneficiary"] - your core domain objects
+  business_models: []               # e.g., ["DC", "EC", "KCC"] - variations/modes in your system
+  domain_terminology: {}            # Key domain terms and definitions
+    # Example:
+    # tenant: "Logical customer or workspace boundary"
+    # end_user: "Primary user represented in the domain"
+
+  # User roles/personas for test scenarios and access control
+  user_roles: []                    # e.g., ["ADMIN", "MANAGER", "VIEWER", "AUDITOR"]
+  role_descriptions: {}             # Map of role → description
+    # Example:
+    # ADMIN: "Full platform access, user management"
+    # VIEWER: "Read-only access to reports"
+
+# --------------------------------------------------------------------------
+# Conventions & Standards
+# --------------------------------------------------------------------------
+conventions:
+  branch_pattern: ""                # e.g., "PROJ-XXXX", "feature/PROJ-XXXX"
+  commit_format: "conventional"     # "conventional" | "angular" | "custom"
+  custom_commit_format: ""          # Only if commit_format is "custom"
+  default_branch: "main"            # e.g., "main", "master", "develop"
+  pr_template: true                 # true to generate a PR template
+  test_coverage_target: 80          # Minimum code coverage percentage
+  strict_typescript: true           # Enforce TypeScript strict mode
+  max_function_lines: 30            # Max lines per function (for reviewer)
+
+  # Naming conventions
+  naming:
+    services: ""                    # e.g., "FeatureNameService", "feature_name_service"
+    components: ""                  # e.g., "app-feature-name", "FeatureName"
+
+# --------------------------------------------------------------------------
+# Context Files - Documentation about your project for AI consumption
+# --------------------------------------------------------------------------
+# These define which context documents your project has. After running
+# generate.sh, template files will be created in .github/context/ for you
+# to fill in. The bootstrap agent can help populate these from your codebase.
+# --------------------------------------------------------------------------
+context_files:
+  - name: "System Architecture"
+    file: "System_Architecture.md"
+    description: "System components, boundaries, integrations, data flows"
+    status: "todo"                  # "todo" | "draft" | "complete"
+
+  - name: "Database Schema"
+    file: "Database_Schema.md"
+    description: "Database tables, relationships, sensitive fields"
+    status: "todo"
+
+  - name: "Project Structure"
+    file: "Project_Structure.md"
+    description: "Important directories, entry points, scripts, and ownership notes"
+    status: "todo"
+
+  - name: "Access Control"
+    file: "Access_Control.md"
+    description: "Auth middleware, role-based access, data isolation"
+    status: "todo"
+
+  - name: "Role & Permission Matrix"
+    file: "Role_Permission_Matrix.md"
+    description: "All roles, permissions, and access levels"
+    status: "todo"
+
+  - name: "API Reference"
+    file: "API_Reference.md"
+    description: "All API endpoints, request/response formats, auth requirements"
+    status: "todo"
+
+  - name: "Domain Glossary"
+    file: "Domain_Glossary.md"
+    description: "Business terms, acronyms, entity definitions, domain language"
+    status: "todo"
+
+  - name: "Testing Strategy"
+    file: "Testing_Strategy.md"
+    description: "Test pyramid, frameworks, coverage targets, mocking patterns"
+    status: "todo"
+
+  - name: "Third-Party Integrations"
+    file: "Third_Party_Integrations.md"
+    description: "External APIs, vendor SDKs, webhooks, integration patterns"
+    status: "todo"
+
+# --------------------------------------------------------------------------
+# Platforms — Choose which AI coding platforms to generate output for
+# --------------------------------------------------------------------------
+# The toolkit generates universal open standards PLUS platform-specific files.
+# Enable only the platforms your team uses.
+# --------------------------------------------------------------------------
+platforms:
+  # Universal open standards (recommended — works across most AI tools)
+  agents_md: true                   # AGENTS.md — canonical project instructions at repo root
+  skills: true                      # .github/skills/*/SKILL.md — auto-activating skills (Copilot + Cursor)
+  context_files: true               # context/ at repo root — project knowledge base
+
+  # Platform-specific adapters
+  copilot: true                     # GitHub Copilot — .github/copilot-instructions.md, agents/
+  opencode: false                   # OpenCode — .ai/opencode/agents/, .ai/opencode/opencode.json
+  codex: false                      # Codex CLI — .ai/codex/config.toml, .ai/codex/agents/
+  cursor: false                     # Cursor — .cursor/rules/project.mdc
+  claude: false                     # Claude Code — CLAUDE.md pointer to AGENTS.md
+  cline: false                      # Cline — .clinerules pointer to AGENTS.md
+  windsurf: false                   # Windsurf — .windsurfrules pointer to AGENTS.md
+
+# --------------------------------------------------------------------------
+# Feature Toggles - Enable/disable optional toolkit features
+# --------------------------------------------------------------------------
+features:
+  # Agents to include (disable any that don't apply to your project)
+  agents:
+    engineer: true
+    reviewer: true
+    documentation: true
+    architect: true
+
+  # Skills to include
+  skills:
+    api_endpoint: true
+    frontend_component: true        # Angular/React/Vue component generation
+    unit_test: true
+    e2e_test: true
+    security_scan: true
+    git_workflow: true
+    planning: true
+    query_optimizer: true
+    document_generator: true
+    accessibility_audit: true
+    phi_detection: false            # Enable if your project handles regulated sensitive data
+    skill_generator: true           # Meta-skill for creating new skills
+
+  # Optional integrations
+  integrations:
+    jira_mcp: false                 # Jira MCP integration
+    mnemix: false                   # Optional long-term agent memory via the external Mnemix CLI
+
+  # Skill evals — test that AI agent skills activate and produce correct output
+  evals:
+    enabled: true                   # Generate eval scaffolding
+    skills_to_eval:                 # Which skills get eval templates
+      - mnemix-memory               # P0 — mandatory protocol
+      - api-endpoint                # P1 — security-critical
+      - security-scan               # P1 — vulnerability detection
+
+# --------------------------------------------------------------------------
+# Mnemix — Cross-Session Episodic Memory
+# --------------------------------------------------------------------------
+# Only used when features.integrations.mnemix is true.
+# Gives AI agents persistent memory across conversations.
+# --------------------------------------------------------------------------
+mnemix:
+  session_strategy: "branch"        # "branch" (auto-detect from git) | "manual" (agent chooses)
+  store_path: ".mnemix"             # Where the external Mnemix store lives
+  binary: "mnemix"                  # CLI binary name or absolute path
+  scope: ""                         # Optional explicit scope; defaults to repo:<project.name>
+  entry_conventions:
+    tags:
+      - bug-fix
+      - decision
+      - discovery
+      - error
+      - refactor
+      - pattern
+    format: "[tag] component: description — details"

@@ -1,0 +1,54 @@
+# Generated output (created by setup/generate.sh from templates/)
+# The .ai/ directory contains all generated files.
+# Symlinks are created by .ai/setup-links.sh after copying .ai/ to your workspace.
+.ai/
+# AGENTS.md
+# context
+# CLAUDE.md
+# .clinerules
+# .windsurfrules
+# .cursor/
+
+# Reference documents (user-provided setup inputs)
+# Keep README.md, ignore everything else users drop in
+reference/*
+!reference/README.md
+
+# User-specific config (each team fills in their own)
+# toolkit.config.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+ENV/
+
+# Node
+node_modules/
+bun.lock
+package-lock.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Scratch / temp files
+.tmp/
+
+# Environment
+.env
+.env.local

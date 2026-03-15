@@ -1,0 +1,17 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Documentation — Codex agent role config (ConfigProfile)
+# Project: {{project.name}}
+# ─────────────────────────────────────────────────────────────────────────────
+# Reference this file from config.toml with:
+#   [agents.documentation]
+#   description = "Documentation and README generation for {{project.name}}"
+#   config_file = "agents/documentation.toml"
+#   nickname_candidates = ["docs", "documentation", "readme"]
+#
+# ─── Persona ─────────────────────────────────────────────────────────────────
+{{#include-commented shared/personas/documentation.md.tmpl}}
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Role-specific overrides (applied on top of global config.toml settings)
+approval_policy = "on-request"
+sandbox_mode    = "workspace-write"

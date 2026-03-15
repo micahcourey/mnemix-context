@@ -1,0 +1,19 @@
+---
+name: 'Architect'
+description: Planning-focused architect for technical decomposition, architecture notes, and markdown plan files
+argument-hint: planning request, architecture question, implementation plan, RFC, ADR, or migration plan
+tools: ['codebase', 'read', 'search', 'createFile', 'edit']
+handoffs:
+  - label: Save Plan File
+    agent: agent
+    prompt: Save the architecture plan above as a markdown file in the repository.
+    send: false
+  - label: Hand Off to Engineer
+    agent: Engineer
+    prompt: Implement the approved plan above following project patterns.
+    send: false
+---
+
+> **Planning Documents**: When asked to create a plan, RFC, ADR, migration plan, or other markdown artifact, load [skills/document-generator/SKILL.md](skills/document-generator/SKILL.md) first when a standardized template would help.
+
+{{#include shared/personas/architect.md.tmpl}}

@@ -1,0 +1,138 @@
+# Compliance Standards
+
+> L2 instruction module — loaded when working on accessibility, sensitive data handling, regulatory compliance, or audit requirements.
+
+{{#if domain.compliance}}
+## Applicable Frameworks
+
+**{{domain.compliance}}**
+
+All code must comply with these frameworks. When in doubt, apply the stricter standard.
+{{/if}}
+
+---
+
+## Accessibility (WCAG 2.2 Level AA)
+
+All user-facing components MUST meet WCAG 2.2 Level AA. Apply these rules whenever creating or modifying frontend code.
+
+### Semantic HTML & ARIA
+
+- Use semantic elements (`<button>`, `<nav>`, `<main>`, `<table>`) — not styled `<div>` or `<span>`
+- Every interactive element must have an accessible name (visible label, `aria-label`, or `aria-labelledby`)
+- Icons must have text alternatives (`aria-label` or visually hidden text)
+- Tables must have `<th>` headers and descriptive `aria-label`
+- Forms must have `<label>` elements associated with inputs via `for`/`id`
+
+### Keyboard Navigation
+
+- All interactive elements must be keyboard focusable
+- Logical tab order (follow visual layout)
+- No keyboard traps — user can always tab away
+- Focus must be visible at all times (`outline` or equivalent indicator)
+- Custom components need explicit `tabindex`, `role`, and keyboard event handlers
+
+### Color & Contrast
+
+- **Text**: 4.5:1 minimum contrast ratio (3:1 for large text ≥ 18pt / 14pt bold)
+- **UI components**: 3:1 minimum contrast against background
+- Color must never be the **sole** method of conveying information (add icons, text, or patterns)
+
+### Forms & Validation
+
+- Every input has a visible `<label>` or `aria-label`
+- Required fields indicated programmatically (`aria-required="true"` or `required`)
+- Validation errors associated via `aria-describedby`
+- Error messages announced to screen readers (via `aria-live` or `role="alert"`)
+
+### Dynamic Content
+
+- Use `aria-live` regions for content that updates without page reload
+- Route changes must be announced to screen readers
+- Loading states must be communicated (`aria-busy`, loading indicators with text)
+- Modals/dialogs must trap focus and return focus on close
+
+### Accessibility Checklist
+
+- [ ] Semantic HTML elements used (not div/span for interactive elements)
+- [ ] All interactive elements have accessible names
+- [ ] Keyboard navigation works without mouse
+- [ ] Focus visible on all focusable elements
+- [ ] Color contrast meets minimums (4.5:1 text, 3:1 UI)
+- [ ] Form inputs have associated labels
+- [ ] Dynamic content uses aria-live regions
+- [ ] Modals trap and restore focus
+
+---
+
+{{#if domain.sensitive_data}}
+## Sensitive Data Protection
+
+**Protected data types**: {{domain.sensitive_data}}
+
+### Logging Rules
+
+- **Never log** sensitive data fields (names, SSNs, dates of birth, medical records, etc.)
+- Log only reference IDs, correlation IDs, and non-sensitive metadata
+- Error logs must include context (request ID, user role) but **never** sensitive payloads
+- Sanitize or redact before any `console.log`, `logger.info`, or equivalent
+
+### API Response Rules
+
+- **Never return** raw database rows to the client
+- Use explicit field selection (allowlist pattern) — only include fields the client needs
+- Verify sensitive fields are excluded from serialization / DTO mapping
+- Response schemas should be reviewed for new sensitive fields on every change
+
+### Storage & Transmission
+
+- Sensitive data must be encrypted at rest and in transit
+- Use environment variables for secrets — never hardcode credentials, API keys, or connection strings
+- Frontend code must never reference `process.env` secrets
+
+### Audit Trail
+
+All mutations to sensitive data must include:
+- {{patterns.db.audit_columns}}
+- Audit middleware in the API route chain (`{{patterns.auth.audit}}`)
+- Record of who changed what and when
+{{/if}}
+
+{{#if patterns.isolation.enabled}}
+---
+
+## Data Isolation
+
+**Strategy**: {{patterns.isolation.strategy}}
+**Isolation field**: `{{patterns.isolation.field}}`
+
+- Every database query MUST filter by `{{patterns.isolation.field}}`
+- API endpoints must derive the isolation value from the authenticated user's token — never from request parameters
+- Verify isolation in both read and write operations
+- {{patterns.isolation.description}}
+
+### Isolation Checklist
+
+- [ ] All queries filter by `{{patterns.isolation.field}}`
+- [ ] Isolation field derived from auth token, not request body/params
+- [ ] Cross-tenant access tested and blocked
+- [ ] Bulk operations respect isolation boundaries
+{{/if}}
+
+---
+
+## Compliance Checklist (All Code)
+
+- [ ] No sensitive data in logs, error messages, or API responses
+{{#if patterns.isolation.enabled}}
+- [ ] Data isolation maintained in all queries
+{{/if}}
+- [ ] Audit trail for all sensitive data mutations
+- [ ] Frontend meets WCAG 2.2 AA accessibility standards
+- [ ] No hardcoded secrets or credentials
+- [ ] Input validation on all user-supplied data
+- [ ] Authorization checks on all protected operations
+
+---
+
+**See also**: [context/Access_Control.md](../context/Access_Control.md) for project-specific auth middleware examples | [context/Role_Permission_Matrix.md](../context/Role_Permission_Matrix.md) for roles and permissions.

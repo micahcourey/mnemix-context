@@ -1,0 +1,10 @@
+// API endpoint inventory for {{project.name}}
+// Format: one JSON object per line
+// Fields: service, method, path, description, auth_required, privilege, request_body, response_type
+// Populate via @Setup-Wizard agent or by scanning route/controller files
+//
+// Example:
+// {"service": "user-api", "method": "GET", "path": "/api/v1/users", "description": "List all users", "auth_required": true, "privilege": "VIEW_USERS", "request_body": null, "response_type": "User[]"}
+// {"service": "user-api", "method": "GET", "path": "/api/v1/users/:id", "description": "Get user by ID", "auth_required": true, "privilege": "VIEW_USERS", "request_body": null, "response_type": "User"}
+// {"service": "user-api", "method": "POST", "path": "/api/v1/users", "description": "Create user", "auth_required": true, "privilege": "CREATE_USER", "request_body": "CreateUserDto", "response_type": "User"}
+// {"service": "auth-api", "method": "POST", "path": "/api/v1/auth/login", "description": "User login", "auth_required": false, "privilege": null, "request_body": "LoginDto", "response_type": "AuthToken"}

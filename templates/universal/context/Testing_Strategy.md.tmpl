@@ -1,0 +1,192 @@
+# {{project.name}} - Testing Strategy
+
+> Test pyramid, coverage targets, frameworks, mocking patterns, and test data approach for {{project.full_name}}.
+
+---
+
+## Overview
+
+<!-- TODO: Describe your overall testing philosophy -->
+
+**Coverage Target**: {{conventions.coverage_target}}%
+
+---
+
+## Test Pyramid
+
+```
+        ┌─────────┐
+        │  E2E /  │  ← Few, slow, high-confidence
+        │  UI     │
+       ┌┴─────────┴┐
+       │Integration │  ← API contracts, DB queries
+      ┌┴────────────┴┐
+      │  Unit Tests   │  ← Many, fast, isolated
+      └───────────────┘
+```
+
+| Layer | Target Coverage | Framework | Run Frequency |
+|-------|----------------|-----------|---------------|
+| **Unit** | {{conventions.coverage_target}}%+ | {{tech.frontend.testing}} / {{tech.backend.testing}} | Every commit |
+| **Integration** | Key paths | <!-- TODO: framework --> | Every PR |
+| **E2E** | Critical flows | <!-- TODO: framework --> | Nightly / Pre-release |
+
+---
+
+## Frameworks & Tools
+
+### Frontend Testing
+
+| Tool | Purpose | Config File |
+|------|---------|-------------|
+| {{tech.frontend.testing}} | Unit tests | <!-- TODO: e.g., karma.conf.js, jest.config.ts --> |
+| <!-- TODO --> | E2E tests | <!-- TODO: e.g., playwright.config.ts --> |
+| <!-- TODO --> | Coverage reports | <!-- TODO --> |
+
+### Backend Testing
+
+| Tool | Purpose | Config File |
+|------|---------|-------------|
+| {{tech.backend.testing}} | Unit tests | <!-- TODO: e.g., jest.config.js --> |
+| <!-- TODO --> | Integration tests | <!-- TODO --> |
+| <!-- TODO --> | API contract tests | <!-- TODO --> |
+
+---
+
+## Unit Testing Patterns
+
+### Frontend Component Tests
+
+<!-- TODO: Show your project's standard component test pattern -->
+
+```typescript
+// Example pattern — replace with your actual conventions
+describe('ComponentName', () => {
+  let component: ComponentName;
+  let fixture: ComponentFixture<ComponentName>;
+  let mockService: jasmine.SpyObj<ServiceName>;
+
+  beforeEach(() => {
+    mockService = jasmine.createSpyObj('ServiceName', ['method1', 'method2']);
+    
+    TestBed.configureTestingModule({
+      declarations: [ComponentName],
+      providers: [{ provide: ServiceName, useValue: mockService }]
+    });
+
+    fixture = TestBed.createComponent(ComponentName);
+    component = fixture.componentInstance;
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+```
+
+### Backend Service Tests
+
+<!-- TODO: Show your project's standard service test pattern -->
+
+```typescript
+// Example pattern — replace with your actual conventions
+describe('ServiceName', () => {
+  let service: ServiceName;
+  let mockRepo: jest.Mocked<Repository>;
+
+  beforeEach(() => {
+    mockRepo = { findOne: jest.fn(), save: jest.fn() } as any;
+    service = new ServiceName(mockRepo);
+  });
+
+  it('should return resource by id', async () => {
+    mockRepo.findOne.mockResolvedValue(mockResource);
+    const result = await service.getById('123');
+    expect(result).toEqual(mockResource);
+  });
+});
+```
+
+---
+
+## Mocking Strategy
+
+<!-- TODO: Document your mocking conventions -->
+
+| What to Mock | How | When |
+|-------------|-----|------|
+| HTTP calls | <!-- e.g., HttpClientTestingModule, nock, msw --> | Unit tests |
+| Database | <!-- e.g., in-memory DB, repository mocks --> | Unit tests |
+| External APIs | <!-- e.g., WireMock, mock server, stubs --> | Integration tests |
+| Auth/tokens | <!-- e.g., mock middleware, test tokens --> | All tests |
+| Time/dates | <!-- e.g., jasmine.clock(), jest.useFakeTimers() --> | Date-sensitive tests |
+
+---
+
+## Test Data
+
+<!-- TODO: Document how test data is managed -->
+
+| Approach | Used For | Location |
+|----------|----------|----------|
+| Fixtures / factories | Unit tests | <!-- e.g., test/fixtures/ --> |
+| Seed scripts | Integration tests | <!-- e.g., test/seeds/ --> |
+| Test database | E2E tests | <!-- e.g., docker-compose.test.yml --> |
+
+### Sensitive Data in Tests
+
+<!-- TODO: How do you handle PII/PHI in test data? -->
+<!-- e.g., synthetic data only, no production data, anonymization -->
+
+---
+
+## E2E Testing
+
+<!-- TODO: Document E2E test structure and conventions -->
+
+### Test Structure
+
+```
+e2e/
+├── specs/           # Test specifications
+├── steps/           # Step implementations
+├── pages/           # Page objects
+├── fixtures/        # Test data
+└── config/          # Environment configs
+```
+
+### Running E2E Tests
+
+```bash
+# TODO: Add your E2E test commands
+```
+
+---
+
+## CI/CD Integration
+
+| Stage | Tests Run | Fail Behavior |
+|-------|----------|---------------|
+| Pre-commit | Linting, affected unit tests | Block commit |
+| PR | Full unit + integration | Block merge |
+| Post-merge | Full suite + E2E | Alert team |
+| Pre-deploy | Smoke tests | Block deployment |
+
+**CI Platform**: {{tech.cicd.platform}}
+
+---
+
+## Coverage Requirements
+
+| Scope | Minimum | Enforced |
+|-------|---------|----------|
+| New code | {{conventions.coverage_target}}% | <!-- TODO: Yes/No --> |
+| Overall project | <!-- TODO --> | <!-- TODO: Yes/No --> |
+| Critical paths | 100% | <!-- TODO: Yes/No --> |
+
+---
+
+## Sources
+
+<!-- Files scanned to detect testing patterns -->
+<!-- The bootstrap agent will populate this -->

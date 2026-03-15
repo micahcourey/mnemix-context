@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Reviewer — Codex agent role config (ConfigProfile)
+# Project: {{project.name}}
+# ─────────────────────────────────────────────────────────────────────────────
+# Reference this file from config.toml with:
+#   [agents.reviewer]
+#   description = "Code review and quality assurance for {{project.name}}"
+#   config_file = "agents/reviewer.toml"
+#   nickname_candidates = ["review", "reviewer", "pr"]
+#
+# ─── Persona ─────────────────────────────────────────────────────────────────
+{{#include-commented shared/personas/reviewer.md.tmpl}}
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Role-specific overrides (applied on top of global config.toml settings)
+# Reviewer only reads — no writes needed
+approval_policy = "on-request"
+sandbox_mode    = "read-only"

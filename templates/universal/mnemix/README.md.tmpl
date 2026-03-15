@@ -1,0 +1,82 @@
+# Mnemix
+
+Optional long-term memory integration for AI agents in **{{project.name}}** powered by the external [Mnemix](https://github.com/micahcourey/mnemix) project.
+
+While the project's Layer 1–3 files (AGENTS.md → instructions/ → context/) define static rules and knowledge, Mnemix records durable project memory: bugs fixed, decisions made, patterns discovered, and procedures worth reusing.
+
+## Setup
+
+Install Mnemix:
+
+```bash
+pip install mnemix
+```
+
+Initialize the local store:
+
+```bash
+{{mnemix.binary}} --store {{mnemix.store_path}} init
+```
+
+If you want a Python-based workflow helper for coding agents, see the official coding agent adapter:
+
+- Repo: [micahcourey/mnemix](https://github.com/micahcourey/mnemix)
+- Adapter: `adapters/coding_agent_adapter.py`
+- Docs: [docs.mnemix.org/guide](https://docs.mnemix.org/guide/)
+
+## Quick Reference
+
+```bash
+# Recall recent entries for this repository scope
+{{mnemix.binary}} --store {{mnemix.store_path}} recall --scope {{mnemix.scope}}
+
+# Store what you learned
+{{mnemix.binary}} --store {{mnemix.store_path}} remember \
+  --id mem-001 \
+  --scope {{mnemix.scope}} \
+  --kind summary \
+  --title "Project memory" \
+  --summary "Short summary of the lesson learned." \
+  --detail "Longer detail about the decision, pitfall, or procedure." \
+  --importance 75 \
+  --tag coding --tag summary
+
+# Search across all sessions
+{{mnemix.binary}} --store {{mnemix.store_path}} search --text "middleware" --scope {{mnemix.scope}}
+
+# Check store health
+{{mnemix.binary}} --store {{mnemix.store_path}} stats
+
+# Checkpoint before risky changes
+{{mnemix.binary}} --store {{mnemix.store_path}} checkpoint --name before-change
+
+# Restore to a prior state
+{{mnemix.binary}} --store {{mnemix.store_path}} restore --checkpoint before-change
+```
+
+## Entry Conventions
+
+Suggested kinds for coding workflows:
+
+| Kind | Use for |
+|------|---------|
+| `decision` | Architectural or implementation choices |
+| `summary` | End-of-task summaries |
+| `fact` | Verified project facts |
+| `procedure` | Repeatable setup or debugging steps |
+| `warning` | Pitfalls, regressions, or traps |
+
+## How It Works
+
+- The store lives under `{{mnemix.store_path}}` and should be gitignored
+- Scopes keep memory isolated per repo, workspace, or project
+- Agents can recall at session start and remember new facts after completing tasks
+- Checkpoints and restore provide recovery for risky changes
+
+## Resetting
+
+To start fresh, delete the store directory:
+
+```bash
+rm -rf {{mnemix.store_path}}
+```

@@ -1,0 +1,27 @@
+---
+name: 'Reviewer'
+description: Automated code review enforcing {{project.name}} standards, security, and best practices
+argument-hint: PR number, file path, or code to review
+tools: ['codebase', 'read', 'search', 'changes', 'problems']
+handoffs:
+  - label: Fix Issues
+    agent: Engineer
+    prompt: Fix the code review issues identified above following project patterns and best practices.
+    send: false
+  - label: Run Compliance Scan
+    agent: Compliance Guardian
+    prompt: Perform a deep security and accessibility scan on the code changes.
+    send: false
+  - label: Generate Tests
+    agent: Tester
+    prompt: Generate tests to cover the reviewed code.
+    send: false
+  - label: Document Changes
+    agent: Documentation
+    prompt: Generate documentation for the reviewed code changes.
+    send: false
+---
+
+> **Document Generation**: When asked to create any document (review report, ADR, RFC, etc.), always load and follow [skills/document-generator/SKILL.md](skills/document-generator/SKILL.md) for standardized templates.
+
+{{#include shared/personas/reviewer.md.tmpl}}

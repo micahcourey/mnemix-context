@@ -1,0 +1,169 @@
+# evals/reference-config.yaml — DO NOT use as a real project config.
+# This config exists to render a complete workspace for eval testing.
+# It enables all features and skills so every template is exercised.
+
+project:
+  name: "eval-test-project"
+  full_name: "Eval Test Project"
+  description: "Eval fixture workspace for testing AI agent skills"
+  org_name: "TestOrg"
+  repo_url: "https://github.com/example/eval-test-project"
+  jira_key: "EVAL"
+
+tech_stack:
+  frontend:
+    framework: "Angular 18"
+    language: "TypeScript 5.x"
+    ui_library: "Angular Material"
+    state_management: "RxJS"
+    testing: "Jasmine/Karma"
+    component_prefix: "app"
+  backend:
+    framework: "Express"
+    language: "TypeScript"
+    runtime: "Node.js 20"
+    testing: "Jest"
+    api_style: "REST"
+  databases:
+    - name: "Aurora PostgreSQL"
+      type: "relational"
+      purpose: "primary data store"
+  cloud:
+    provider: "AWS"
+    compute: "Lambda + ECS Fargate"
+    key_services: ["API Gateway", "S3", "CloudFront"]
+  auth:
+    provider: "Okta SSO"
+    strategy: "JWT + RBAC"
+    token_type: "JWT"
+  cicd:
+    platform: "GitHub Actions"
+    secondary: ""
+    containerized: false
+
+patterns:
+  auth_middleware:
+    description: "JWT verification + RBAC middleware chain"
+    backend_chain: |
+      router.post('/api/resource',
+        authMiddleware.verifyTokenRetrieveUser,
+        permissionsMiddleware.validateRequiredPrivilege(PrivilegeTypes.CreateResource, dataSource, pool),
+        auditUserActionMiddleware(auditService),
+        controller.createResource
+      );
+    frontend_check: |
+      const hasAccess = this.privilegeService.checkPrivilege({
+        privilege: PrivilegeTypes.EditResource,
+        agreementId: this.agreementId,
+      });
+    middleware_names:
+      authenticate: "authMiddleware.verifyTokenRetrieveUser"
+      authorize: "permissionsMiddleware.validateRequiredPrivilege"
+      audit: "auditUserActionMiddleware"
+
+  data_isolation:
+    enabled: true
+    strategy: "row-level filtering"
+    isolation_field: "tenant_id"
+    description: "All queries must filter by tenant_id for isolation"
+
+  error_format: |
+    { "error": string, "message": string, "statusCode": number }
+
+  database_conventions:
+    table_naming: "SCREAMING_SNAKE_CASE"
+    audit_columns: ["created_at", "created_by", "updated_at", "updated_by"]
+    soft_delete: false
+    soft_delete_column: ""
+    migration_tool: "Liquibase"
+
+domain:
+  industry: "Healthcare"
+  sensitive_data_types: ["PHI", "PII"]
+  compliance_frameworks: ["WCAG 2.2"]
+  key_entities: ["Agreement", "Participant", "Beneficiary"]
+  business_models: ["DC", "EC", "KCC"]
+  domain_terminology:
+    tenant: "Logical customer or workspace boundary"
+    end_user: "Primary user represented in the domain"
+  user_roles: ["ADMIN", "MANAGER", "VIEWER"]
+  role_descriptions:
+    ADMIN: "Full platform access"
+    MANAGER: "Team-level management"
+    VIEWER: "Read-only access"
+
+conventions:
+  branch_pattern: "EVAL-XXXX"
+  commit_format: "conventional"
+  default_branch: "main"
+  pr_template: true
+  test_coverage_target: 80
+  strict_typescript: true
+  max_function_lines: 30
+  naming:
+    services: "FeatureNameService"
+    components: "app-feature-name"
+
+context_files:
+  - name: "System Architecture"
+    file: "System_Architecture.md"
+    description: "System components, boundaries, integrations, data flows"
+    status: "todo"
+  - name: "Database Schema"
+    file: "Database_Schema.md"
+    description: "Database tables, relationships, sensitive fields"
+    status: "todo"
+  - name: "Access Control"
+    file: "Access_Control.md"
+    description: "Auth middleware, role-based access, data isolation"
+    status: "todo"
+
+platforms:
+  agents_md: true
+  skills: true
+  context_files: true
+  copilot: true
+  opencode: false
+  codex: false
+  cursor: false
+  claude: false
+  cline: false
+  windsurf: false
+
+features:
+  agents:
+    engineer: true
+    reviewer: true
+    documentation: true
+    architect: true
+  skills:
+    api_endpoint: true
+    frontend_component: true
+    unit_test: true
+    e2e_test: true
+    security_scan: true
+    git_workflow: true
+    planning: true
+    query_optimizer: true
+    document_generator: true
+    accessibility_audit: true
+    phi_detection: false
+    skill_generator: true
+  integrations:
+    jira_mcp: false
+    mnemix: true
+  evals:
+    enabled: true
+    skills_to_eval:
+      - mnemix-memory
+      - api-endpoint
+      - security-scan
+
+mnemix:
+  session_strategy: "branch"
+  store_path: ".mnemix"
+  binary: "mnemix"
+  scope: "repo:eval-test-project"
+  entry_conventions:
+    tags: [bug-fix, decision, discovery, error, refactor, pattern]
+    format: "[tag] component: description — details"

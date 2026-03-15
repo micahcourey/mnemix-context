@@ -1,0 +1,173 @@
+# ============================================================================
+# Example: React + Python + GCP Stack
+# ============================================================================
+# Modern stack with React frontend, FastAPI backend on Cloud Run,
+# Cloud SQL PostgreSQL, and Firebase Auth.
+# ============================================================================
+
+project:
+  name: "DataPlatform"
+  full_name: "Data Analytics Platform"
+  description: "Data analytics and reporting platform for business intelligence"
+  org_name: "DataCo"
+  repo_url: "github.com/dataco/data-platform"
+  jira_key: "DATA"
+
+tech_stack:
+  frontend:
+    framework: "React 18"
+    language: "TypeScript 5.x"
+    ui_library: "MUI (Material UI)"
+    state_management: "Redux Toolkit"
+    testing: "Vitest, React Testing Library"
+    component_prefix: ""
+  backend:
+    framework: "FastAPI"
+    language: "Python 3.12"
+    runtime: "Python 3.12"
+    testing: "pytest"
+    api_style: "REST"
+  databases:
+    - name: "Cloud SQL PostgreSQL"
+      type: "relational"
+      purpose: "Primary data store"
+    - name: "BigQuery"
+      type: "analytics"
+      purpose: "Data warehouse and analytics"
+    - name: "Redis (Memorystore)"
+      type: "key-value"
+      purpose: "Caching and session store"
+  cloud:
+    provider: "GCP"
+    compute: "Cloud Run"
+    key_services: ["Cloud Storage", "Pub/Sub", "Cloud Functions", "Vertex AI"]
+  auth:
+    provider: "Firebase Auth"
+    strategy: "JWT + RBAC"
+    token_type: "JWT"
+  cicd:
+    platform: "GitHub Actions"
+    secondary: "Cloud Build"
+    containerized: true
+
+patterns:
+  auth_middleware:
+    description: "Firebase JWT verification with role-based access via custom claims"
+    backend_chain: |
+      @router.post("/api/resource")
+      @require_auth
+      @require_role("admin")
+      @audit_action("CREATE_RESOURCE")
+      async def create_resource(request: Request, user: User = Depends(get_current_user)):
+          ...
+    frontend_check: |
+      const { user, hasRole } = useAuth();
+      if (!hasRole('editor')) {
+        return <Navigate to="/unauthorized" />;
+      }
+    middleware_names:
+      authenticate: "@require_auth"
+      authorize: "@require_role"
+      audit: "@audit_action"
+
+  data_isolation:
+    enabled: true
+    strategy: "row-level filtering"
+    isolation_field: "organization_id"
+    description: "All queries filter by organization_id from JWT custom claims"
+
+  error_format: |
+    { "detail": string, "status_code": number }
+
+  database_conventions:
+    table_naming: "snake_case"
+    audit_columns: ["created_at", "created_by", "updated_at", "updated_by"]
+    soft_delete: true
+    soft_delete_column: "deleted_at"
+    migration_tool: "Alembic"
+
+domain:
+  industry: "Data Analytics"
+  sensitive_data_types: ["PII", "business metrics"]
+  compliance_frameworks: ["SOC 2", "GDPR"]
+  key_entities: ["Organization", "Dataset", "Report", "Dashboard", "Pipeline"]
+  business_models: []
+  domain_terminology:
+    dataset: "A collection of structured data for analysis"
+    pipeline: "An automated data processing workflow"
+    widget: "A visualization component on a dashboard"
+  user_roles: ["ADMIN", "ANALYST", "VIEWER", "DATA_ENGINEER"]
+  role_descriptions:
+    ADMIN: "Full platform access, user and org management"
+    ANALYST: "Create reports, dashboards, and queries"
+    VIEWER: "View shared dashboards and reports"
+    DATA_ENGINEER: "Manage data pipelines and datasets"
+
+conventions:
+  branch_pattern: "DATA-XXXX"
+  commit_format: "conventional"
+  default_branch: "main"
+  pr_template: true
+  test_coverage_target: 85
+  strict_typescript: true
+  max_function_lines: 25
+  naming:
+    services: "feature_name_service"
+    components: "FeatureName"
+
+context_files:
+  - name: "System Architecture"
+    file: "System_Architecture.md"
+    description: "GCP infrastructure, Cloud Run services, data pipelines"
+    status: "todo"
+  - name: "Database Schema"
+    file: "Database_Schema.md"
+    description: "Cloud SQL tables, BigQuery datasets, Redis keys"
+    status: "todo"
+
+platforms:
+  agents_md: true
+  skills: true
+  context_files: true
+  copilot: true
+  opencode: false
+  codex: false
+  cursor: true                      # Example with Cursor enabled
+  claude: false
+  cline: false
+  windsurf: false
+
+features:
+  agents:
+    engineer: true
+    reviewer: true
+    documentation: true
+    architect: true
+  skills:
+    api_endpoint: true
+    frontend_component: true
+    unit_test: true
+    e2e_test: false
+    security_scan: true
+    git_workflow: true
+    planning: true
+    query_optimizer: true
+    document_generator: true
+    accessibility_audit: true
+    phi_detection: false
+    skill_generator: true
+  integrations:
+    jira_mcp: false
+    mnemix: false                   # Optional external long-term memory via Mnemix
+  evals:
+    enabled: true
+    skills_to_eval: [mnemix-memory, api-endpoint, security-scan]
+
+mnemix:
+  session_strategy: "branch"
+  store_path: ".mnemix"
+  binary: "mnemix"
+  scope: "repo:data-platform"
+  entry_conventions:
+    tags: [bug-fix, decision, discovery, error, refactor, pattern]
+    format: "[tag] component: description — details"

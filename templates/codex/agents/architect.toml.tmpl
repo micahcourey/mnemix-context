@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Architect — Codex agent role config (ConfigProfile)
+# Project: {{project.name}}
+# ─────────────────────────────────────────────────────────────────────────────
+# Reference this file from config.toml with:
+#   [agents.architect]
+#   description = "Architecture planning, decomposition, and markdown plan files"
+#   config_file = "agents/architect.toml"
+#   nickname_candidates = ["architect", "arch", "planner"]
+#
+# ─── Persona ─────────────────────────────────────────────────────────────────
+{{#include-commented shared/personas/architect.md.tmpl}}
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Role-specific overrides (applied on top of global config.toml settings)
+# Architect may write markdown plans, but should not edit product source code.
+approval_policy = "on-request"
+sandbox_mode    = "workspace-write"

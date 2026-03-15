@@ -1,0 +1,42 @@
+# Naming Conventions
+
+> L2 instruction module — loaded when creating files, components, services, or folders.
+
+## File & Code Naming
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| **Components** | `{{conventions.naming.components}}` | |
+| **Services** | `{{conventions.naming.services}}` | |
+
+## Frontend
+
+- **Framework**: {{tech.frontend.framework}}
+- **UI Library**: {{tech.frontend.ui_library}}
+{{#if tech.frontend.component_prefix}}
+- **Component prefix**: `{{tech.frontend.component_prefix}}`
+{{/if}}
+
+## Backend
+
+- **Framework**: {{tech.backend.framework}}
+- **API Style**: {{tech.backend.api_style}}
+
+## Database
+
+- **Table naming**: {{patterns.db.table_naming}}
+- **Migration tool**: {{patterns.db.migration_tool}}
+- **Audit columns**: {{patterns.db.audit_columns}}
+{{#if patterns.db.soft_delete}}
+- **Soft delete column**: `{{patterns.db.soft_delete_col}}`
+{{/if}}
+
+{{#if domain.models}}
+## Business Models / Variations
+
+{{domain.models}}
+{{/if}}
+
+---
+
+**See also**: [context/Project_Structure.md](../context/Project_Structure.md) for repo layout guidance | [context/Domain_Glossary.md](../context/Domain_Glossary.md) for domain terminology and entity names.

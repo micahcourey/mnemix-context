@@ -1,0 +1,43 @@
+# {{project.name}} - Project Structure
+
+> Single-repository guide for where code lives, how the app starts, and which areas matter most.
+
+**Repository URL**: {{project.repo_url}}
+
+## Recommended Sections To Fill In
+
+- **Top-level directories**: `src/`, `app/`, `packages/`, `scripts/`, `tests/`
+- **Entry points**: app bootstrap files, server startup files, CLI entry points
+- **Core flows**: request handling, background jobs, data access, build/deploy flow
+- **High-risk areas**: auth, billing, migrations, destructive scripts, external integrations
+- **Common commands**: install, dev server, test, lint, build, release
+
+## Starter Outline
+
+```md
+## Directory Map
+- `src/` - Main application code
+- `tests/` - Automated test suites
+- `scripts/` - Maintenance and release scripts
+
+## Entry Points
+- `src/main.*` - Application bootstrap
+- `src/routes/*` - HTTP route definitions
+
+## Important Workflows
+- Request flow: router -> service -> data layer
+- Background jobs: scheduler -> worker -> integration client
+
+## Change Notes
+- Areas that usually require coordinated updates
+- Files that should not be edited casually
+```
+
+## Quick Checks
+
+When starting a task, document:
+
+- Where the relevant feature lives
+- Which tests cover it
+- Which scripts or configs affect it
+- Whether there are any generated files or release steps

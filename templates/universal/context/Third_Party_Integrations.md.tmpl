@@ -1,0 +1,160 @@
+# {{project.name}} - Third-Party Integrations
+
+> External APIs, vendor SDKs, webhook contracts, and integration patterns for {{project.full_name}}.
+
+---
+
+## Overview
+
+<!-- TODO: Describe your integration landscape at a high level -->
+<!-- How many external systems does your project integrate with? -->
+<!-- Are integrations synchronous (REST/GraphQL) or asynchronous (events/queues)? -->
+
+---
+
+## Integration Inventory
+
+<!-- TODO: List all third-party integrations -->
+<!-- The bootstrap agent will scan package.json, env vars, and config files to detect these -->
+
+| Integration | Type | Purpose | Auth Method | Environment Vars |
+|-------------|------|---------|-------------|-----------------|
+| <!-- e.g., Okta --> | <!-- IdP --> | <!-- SSO authentication --> | <!-- OAuth 2.0 --> | <!-- OKTA_DOMAIN, OKTA_CLIENT_ID --> |
+| <!-- e.g., AWS S3 --> | <!-- Storage --> | <!-- Document storage --> | <!-- IAM Role --> | <!-- S3_BUCKET_NAME --> |
+| <!-- e.g., SendGrid --> | <!-- Email --> | <!-- Transactional email --> | <!-- API Key --> | <!-- SENDGRID_API_KEY --> |
+
+---
+
+## Integration Details
+
+<!-- Repeat this section for each major integration -->
+
+### <!-- Integration Name -->
+
+**Type**: <!-- REST API / SDK / Webhook / Message Queue / File Transfer -->
+**Documentation**: <!-- link to vendor docs -->
+**Environment**: <!-- all environments, prod only, etc. -->
+
+#### Authentication
+
+```
+<!-- How do you authenticate with this service? -->
+<!-- e.g., API key in header, OAuth client credentials, IAM role -->
+```
+
+#### Endpoints Used
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| <!-- GET --> | <!-- /api/v1/resource --> | <!-- Fetch data --> |
+
+#### Request/Response Examples
+
+```json
+// Request
+{
+  // TODO: Example request payload
+}
+
+// Response
+{
+  // TODO: Example response payload
+}
+```
+
+#### Error Handling
+
+<!-- How does your code handle errors from this integration? -->
+<!-- Retries? Circuit breaker? Fallback behavior? -->
+
+| Error Code | Meaning | Our Response |
+|-----------|---------|-------------|
+| `401` | Unauthorized | Refresh token and retry |
+| `429` | Rate limited | Exponential backoff |
+| `500` | Server error | Retry 3x, then alert |
+
+#### Rate Limits
+
+<!-- TODO: Document any rate limits -->
+
+| Limit | Value | Scope |
+|-------|-------|-------|
+| <!-- Requests/minute --> | <!-- 100 --> | <!-- Per API key --> |
+
+---
+
+## Webhooks (Inbound)
+
+<!-- TODO: Document webhooks your application receives from external services -->
+
+| Source | Endpoint | Event | Verification |
+|--------|----------|-------|-------------|
+| <!-- e.g., Stripe --> | <!-- /webhooks/stripe --> | <!-- payment.completed --> | <!-- Signature validation --> |
+
+---
+
+## Webhooks (Outbound)
+
+<!-- TODO: Document webhooks your application sends to external services -->
+
+| Destination | Event | Payload Format | Retry Policy |
+|-------------|-------|---------------|-------------|
+| <!-- e.g., Partner API --> | <!-- data.updated --> | <!-- JSON --> | <!-- 3 retries, exponential backoff --> |
+
+---
+
+## Message Queues / Event Streams
+
+<!-- TODO: Document async integrations (SQS, SNS, Kafka, RabbitMQ, etc.) -->
+
+| Queue/Topic | Direction | Purpose | Message Format |
+|-------------|-----------|---------|---------------|
+| <!-- e.g., order-events --> | <!-- Publish --> | <!-- Notify downstream --> | <!-- JSON --> |
+
+---
+
+## Shared Libraries / Internal SDKs
+
+<!-- TODO: List internal packages used for integrations -->
+
+| Package | Purpose | Source Repo |
+|---------|---------|------------|
+| <!-- e.g., @org/auth-client --> | <!-- Shared auth middleware --> | <!-- github.com/org/auth-client --> |
+
+---
+
+## Environment Configuration
+
+<!-- TODO: List all environment variables needed for integrations -->
+
+| Variable | Integration | Required | Default |
+|----------|-------------|----------|---------|
+| <!-- e.g., OKTA_DOMAIN --> | <!-- Okta --> | <!-- Yes --> | <!-- None --> |
+
+---
+
+## Circuit Breakers & Resilience
+
+<!-- TODO: Document resilience patterns used for external calls -->
+<!-- e.g., circuit breaker, bulkhead, timeout, fallback -->
+
+| Integration | Pattern | Config |
+|-------------|---------|--------|
+| <!-- e.g., Payment API --> | <!-- Circuit breaker --> | <!-- 5 failures → open for 30s --> |
+
+---
+
+## Monitoring & Alerting
+
+<!-- TODO: How do you monitor integration health? -->
+
+| Integration | Health Check | Alert Threshold |
+|-------------|-------------|----------------|
+| <!-- e.g., Email service --> | <!-- /health endpoint --> | <!-- >5% error rate --> |
+
+---
+
+## Sources
+
+<!-- Files scanned to detect integrations -->
+<!-- The bootstrap agent will populate this -->

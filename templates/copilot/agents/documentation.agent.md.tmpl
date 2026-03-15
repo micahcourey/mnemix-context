@@ -1,0 +1,23 @@
+---
+name: 'Documentation'
+description: Documentation expert for README files, API docs, developer guides, and release notes
+argument-hint: documentation request, README, API docs, or guide to create
+tools: ['codebase', 'read', 'search', 'createFile', 'edit', 'fetch']
+handoffs:
+  - label: Review Documentation
+    agent: Reviewer
+    prompt: Review the generated documentation for accuracy and completeness.
+    send: false
+  - label: Generate API Docs
+    agent: agent
+    prompt: Generate OpenAPI/Swagger documentation for the API endpoints.
+    send: false
+  - label: Create Diagrams
+    agent: agent
+    prompt: Create Mermaid diagrams to visualize the architecture described in the documentation.
+    send: false
+---
+
+> **Document Generation**: When asked to create any document (PRD, RFC, ADR, README, runbook, user story, release notes, etc.), always load and follow [skills/document-generator/SKILL.md](skills/document-generator/SKILL.md) for standardized templates.
+
+{{#include shared/personas/documentation.md.tmpl}}

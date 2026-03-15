@@ -1,0 +1,94 @@
+# Skill Evals — {{project.name}}
+
+Test your AI agent skills to verify they activate correctly and produce expected output.
+
+## Quick Start
+
+```bash
+# Run evals for a specific skill
+python3 .ai/evals/run_eval.py mnemix-memory --platform codex
+
+# Grade the results
+python3 .ai/evals/grade_eval.py mnemix-memory/iteration-1
+
+# View benchmark
+cat .ai/evals/mnemix-memory/iteration-1/benchmark.json
+```
+
+## Supported Platforms
+
+| Platform | Command |
+|----------|---------|
+| **Codex** | `python3 .ai/evals/run_eval.py <skill> --platform codex` |
+| **Claude Code** | `python3 .ai/evals/run_eval.py <skill> --platform claude` |
+| **Copilot / Cursor** | Manual — see [Semi-Automated Flow](#semi-automated-flow) |
+
+## Semi-Automated Flow
+
+For platforms without CLI exec (Copilot, Cursor):
+
+1. View the eval metadata: `cat .ai/evals/<skill>/eval_metadata.json`
+2. Paste each test prompt into the agent chat
+3. Copy the full chat transcript into `.ai/evals/<skill>/iteration-<N>/eval-<name>/with_skill/transcript.md`
+4. Run the grader: `python3 .ai/evals/grade_eval.py <skill>/iteration-<N>`
+
+## Custom Test Cases
+
+Add your own test cases without conflicting with toolkit-provided ones:
+
+1. Create `.ai/evals/<skill>/custom_evals.json` using the same format as `eval_metadata.json`
+2. The runner automatically loads both files and merges test case arrays
+3. Your custom evals are never touched by toolkit upgrades
+
+```json
+{
+  "skill_name": "mnemix-memory",
+  "evals": [
+    {
+      "id": 100,
+      "name": "my-custom-test",
+      "prompt": "Your custom test prompt here",
+      "expected_output": "What you expect the agent to do",
+      "files": [],
+      "assertions": [
+        {
+          "id": "custom-check",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "pattern-to-find",
+          "description": "What this checks"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Assertion Types
+
+| Type | `check` values | Graded by | Use for |
+|---|---|---|---|
+| `deterministic` | `transcript_contains`, `transcript_not_contains`, `transcript_order` | Regex | Protocol compliance, command execution |
+| `llm-judge` | Free-text criteria | Model call (Phase 2) | Quality, completeness, style |
+
+## File Structure
+
+```
+.ai/evals/
+├── run_eval.py                      ← Eval runner
+├── grade_eval.py                    ← Grading engine
+├── README.md                        ← This file
+├── .gitignore                       ← Ignores iteration-*/ results
+└── <skill-name>/
+    ├── eval_metadata.json           ← Toolkit-provided test cases (auto-upgraded)
+    ├── custom_evals.json            ← Your custom test cases (never touched)
+    └── iteration-<N>/               ← Results (gitignored)
+        ├── eval-<case-name>/
+        │   ├── with_skill/
+        │   │   ├── transcript.md
+        │   │   ├── timing.json
+        │   │   └── grading.json
+        │   └── without_skill/
+        │       └── ...
+        └── benchmark.json
+```

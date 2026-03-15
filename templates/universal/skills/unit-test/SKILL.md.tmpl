@@ -1,0 +1,133 @@
+---
+name: unit-test
+description: Generate comprehensive unit tests for {{tech.frontend.framework}} components or {{tech.backend.language}} services with {{conventions.coverage_target}}%+ code coverage.
+---
+
+# Unit Test Generator
+
+## Context Files
+
+Consult [AGENTS.md](AGENTS.md) for the project knowledge routing table.
+**For this skill, prioritize**: Testing conventions (L2 instructions) for prescriptive rules, then Testing Strategy (L3 context) for project-specific patterns, database schema (for test fixtures), and role/permission context files (for mock data).
+
+## When This Skill Activates
+
+This skill activates when:
+- Creating or editing test files (`*.spec.ts`, `*.test.ts`, `*.test.py`, etc.)
+- Discussing test coverage or test strategy
+- Adding tests to existing code
+
+## Instructions
+
+### Step 1: Analyze the Code Under Test
+
+Before generating tests:
+1. **Read the source file** completely
+2. **Identify all public methods** and their signatures
+3. **Map code paths** (branches, conditionals, error handling)
+4. **Find dependencies** to mock (services, APIs, stores)
+5. **Check for authorization patterns** that need test scenarios
+{{#if patterns.isolation.enabled}}
+6. **Identify data isolation patterns** (`{{patterns.isolation.field}}` filtering)
+{{/if}}
+
+### Step 2: Design Test Scenarios
+
+Systematically cover these categories:
+
+| Category | What to Test | Priority |
+|----------|-------------|----------|
+| **Happy Path** | Normal successful operations | Critical |
+| **Validation** | Invalid inputs, missing fields | Critical |
+| **Error Handling** | API failures, exceptions | Critical |
+| **Authorization** | Permission granted vs denied | High |
+{{#if patterns.isolation.enabled}}
+| **Data Isolation** | Cross-scope access prevention | High |
+{{/if}}
+| **Edge Cases** | Null, undefined, empty, boundary values | Medium |
+| **Async Operations** | Promises, observables, callbacks | Medium |
+| **Cleanup** | Subscription cleanup, memory leaks | Medium |
+
+### Step 3: Generate Tests
+
+**Testing framework**: {{tech.frontend.testing}} (frontend), {{tech.backend.testing}} (backend)
+
+Follow these principles:
+- **Arrange-Act-Assert** pattern for every test
+- **One assertion per test** (prefer focused tests)
+- **Descriptive test names** that explain the scenario
+- **Mock external dependencies** (services, HTTP, database)
+- **Test behavior, not implementation** details
+
+### Coverage Requirements
+
+- **Target**: {{conventions.coverage_target}}%+ code coverage
+- **Branch coverage**: Cover all if/else, switch, and ternary branches
+- **Error paths**: Every catch block and error handler tested
+
+### Test Structure
+
+```
+describe('ComponentOrService', () => {
+  // Setup & teardown
+
+  describe('Initialization', () => {
+    it('should create successfully', () => {});
+    it('should initialize with default state', () => {});
+  });
+
+  describe('Feature Method', () => {
+    it('should handle valid input', () => {});
+    it('should reject invalid input', () => {});
+    it('should handle errors gracefully', () => {});
+  });
+
+  describe('Authorization', () => {
+    it('should allow access with correct permission', () => {});
+    it('should deny access without permission', () => {});
+  });
+
+{{#if patterns.isolation.enabled}}
+  describe('Data Isolation', () => {
+    it('should filter by {{patterns.isolation.field}}', () => {});
+    it('should reject cross-scope access', () => {});
+  });
+{{/if}}
+
+  describe('Cleanup', () => {
+    it('should clean up subscriptions on destroy', () => {});
+  });
+});
+```
+
+## Test Patterns
+
+### Mocking Dependencies
+- Use framework-appropriate mocking (spies, stubs, fakes)
+- Mock at the boundary (HTTP, database, external services)
+- Provide realistic test data
+
+### Async Testing
+- Handle promises, observables, and callbacks correctly
+- Use framework async utilities (fakeAsync, waitFor, etc.)
+- Don't forget to await or tick
+
+### Error Testing
+- Test that errors are caught and handled properly
+- Verify error messages and status codes
+- Ensure no sensitive data leaks in error responses
+
+## Checklist
+
+- [ ] All public methods have test coverage
+- [ ] Happy path scenarios covered
+- [ ] Error/exception scenarios covered
+- [ ] Authorization scenarios covered (if applicable)
+{{#if patterns.isolation.enabled}}
+- [ ] Data isolation scenarios covered
+{{/if}}
+- [ ] Edge cases tested (null, empty, boundary values)
+- [ ] Async operations tested correctly
+- [ ] Cleanup/destroy tested
+- [ ] No hardcoded sensitive test data
+- [ ] {{conventions.coverage_target}}%+ coverage achieved

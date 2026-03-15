@@ -1,0 +1,99 @@
+# {{project.name}} — AI Coding Instructions
+
+> Canonical project instructions for all AI coding assistants.
+> This file follows the [AGENTS.md](https://github.com/anthropics/agents-md) open standard.
+>
+> **Progressive Disclosure**: This file is the L1 router. Read only what you need for the current task.
+
+## Project Overview
+
+**{{project.full_name}}** — {{project.description}}
+
+| Layer | Technologies |
+|-------|--------------|
+| **Frontend** | {{tech.frontend.framework}}, {{tech.frontend.language}} |
+| **Backend** | {{tech.backend.runtime}}, {{tech.backend.framework}} |
+| **Cloud** | {{tech.cloud.provider}} |
+| **Auth** | {{tech.auth.provider}}, {{tech.auth.strategy}} |
+
+---
+
+## Instructions — Load When Needed
+
+Detailed instructions are in `instructions/`. Read only the module relevant to your current task.
+
+| Working on... | Read this |
+|--------------|----------|
+| API security, auth, middleware, data isolation | [instructions/security-patterns.md](instructions/security-patterns.md) |
+| Code style, types, error handling, API design | [instructions/coding-standards.md](instructions/coding-standards.md) |
+| Writing tests, mocking, coverage | [instructions/testing-conventions.md](instructions/testing-conventions.md) |
+| Accessibility, data handling, project-specific compliance needs | [instructions/compliance-standards.md](instructions/compliance-standards.md) |
+| Branching, commits, PRs | [instructions/git-workflow.md](instructions/git-workflow.md) |
+| File names, component/service/repo naming | [instructions/naming-conventions.md](instructions/naming-conventions.md) |
+
+---
+
+## Project Knowledge — Load When Needed
+
+Context files provide deep project knowledge. Each `.md` file has a prose overview; companion `.jsonl` / `.yaml` files contain structured data for lookups.
+
+| I need to... | Read this |
+|--------------|-----------|
+| Understand system components and data flows | [context/System_Architecture.md](context/System_Architecture.md) |
+| Look up database tables, columns, relationships | [context/Database_Schema.md](context/Database_Schema.md) + [context/schema.yaml](context/schema.yaml) |
+| Find where code lives and how the repo is organized | [context/Project_Structure.md](context/Project_Structure.md) |
+| Understand auth middleware patterns | Review [instructions/security-patterns.md](instructions/security-patterns.md) first, then [context/Access_Control.md](context/Access_Control.md) |
+| Check roles and permissions | Review [instructions/security-patterns.md](instructions/security-patterns.md) first, then [context/Role_Permission_Matrix.md](context/Role_Permission_Matrix.md) + [context/roles.jsonl](context/roles.jsonl) |
+| Find an API endpoint | [context/API_Reference.md](context/API_Reference.md) + [context/endpoints.jsonl](context/endpoints.jsonl) |
+| Understand domain terminology | [context/Domain_Glossary.md](context/Domain_Glossary.md) + [context/glossary.jsonl](context/glossary.jsonl) |
+| Understand testing patterns | Review [instructions/testing-conventions.md](instructions/testing-conventions.md) first, then [context/Testing_Strategy.md](context/Testing_Strategy.md) |
+| Check external integrations | [context/Third_Party_Integrations.md](context/Third_Party_Integrations.md) |
+
+> **Do not read all context files upfront.** Only load the files relevant to the task at hand.
+
+---
+
+## Skills — Auto-Activating Helpers
+
+Skills in `skills/` auto-activate based on the task at hand. If they don't activate automatically, reference them directly:
+
+| Working on... | Skill |
+|--------------|-------|
+| Creating API endpoints | [skills/api-endpoint/SKILL.md](skills/api-endpoint/SKILL.md) |
+| Building frontend components | [skills/frontend-component/SKILL.md](skills/frontend-component/SKILL.md) |
+| Writing unit tests | [skills/unit-test/SKILL.md](skills/unit-test/SKILL.md) |
+| Writing E2E tests | [skills/e2e-test/SKILL.md](skills/e2e-test/SKILL.md) |
+| Security scanning | [skills/security-scan/SKILL.md](skills/security-scan/SKILL.md) |
+| Accessibility audit | [skills/accessibility-audit/SKILL.md](skills/accessibility-audit/SKILL.md) |
+| Detecting sensitive data | [skills/sensitive-data-detection/SKILL.md](skills/sensitive-data-detection/SKILL.md) |
+| Optimizing database queries | [skills/query-optimizer/SKILL.md](skills/query-optimizer/SKILL.md) |
+| Git workflow automation | [skills/git-workflow/SKILL.md](skills/git-workflow/SKILL.md) |
+| Planning work from tickets | [skills/planning/SKILL.md](skills/planning/SKILL.md) |
+| Generating documents (PRD, RFC, README, runbook, etc.) | [skills/document-generator/SKILL.md](skills/document-generator/SKILL.md) |
+| Creating new skills | [skills/skill-generator/SKILL.md](skills/skill-generator/SKILL.md) |
+{{#if mnemix.enabled}}
+| Cross-session memory, prior decisions, recall | [skills/mnemix-memory/SKILL.md](skills/mnemix-memory/SKILL.md) |
+{{/if}}
+
+---
+{{#if mnemix.enabled}}
+
+## Mnemix — Cross-Session Memory (MANDATORY)
+
+All agents have access to episodic memory that persists across conversations.
+Mnemix records bugs fixed, decisions made, patterns discovered, and errors resolved.
+
+**Every agent session must — this is mandatory, do not skip:**
+1. **Start** with `{{mnemix.binary}} --store {{mnemix.store_path}} recall --scope {{mnemix.scope}}` to check prior context
+2. **End** by persisting a memory with `{{mnemix.binary}} --store {{mnemix.store_path}} remember ...`
+
+Skipping recall means repeating mistakes from prior sessions. This is not optional.
+The store is local, gitignored, and per-developer. It does not affect project files.
+See [skills/mnemix-memory/SKILL.md](skills/mnemix-memory/SKILL.md) for full CLI reference.
+
+---
+
+{{/if}}
+
+**Last Updated**: Auto-generated by Mnemix Context
+**Workspace**: {{project.name}}

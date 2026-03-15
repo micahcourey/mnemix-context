@@ -1,0 +1,108 @@
+# ============================================================================
+# Version Check — PR Gate
+# ============================================================================
+# Ensures that PRs changing template/setup files also update VERSION and
+# CHANGELOG.md. This enforces the repository versioning protocol.
+#
+# Triggers: PRs targeting main
+# Skips: Changes to docs, examples, config template, CI workflows
+# ============================================================================
+
+name: Version Check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changes
+        run: |
+          CHANGED=$(git diff --name-only origin/main...HEAD)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check version bump required
+        run: |
+          CHANGED="${{ steps.changes.outputs.files }}"
+
+          # ── Files that require a version bump when changed ──
+          NEEDS_BUMP=false
+
+          # Check templates/
+          if echo "$CHANGED" | grep -q "^templates/"; then
+            NEEDS_BUMP=true
+          fi
+
+          # Check setup/ (excluding examples/)
+          if echo "$CHANGED" | grep "^setup/" | grep -vq "^setup/examples/"; then
+            NEEDS_BUMP=true
+          fi
+
+          # ── Exempt files (never require version bump) ──
+          # If ONLY exempt files changed, skip the check
+          NON_EXEMPT=$(echo "$CHANGED" | grep -v "^\.github/" \
+            | grep -v "^README\.md$" \
+            | grep -v "^CONTRIBUTING\.md$" \
+            | grep -v "^LICENSE$" \
+            | grep -v "^\.gitignore$" \
+            | grep -v "^toolkit\.config\.yaml$" \
+            | grep -v "^setup/examples/" \
+            | grep -v "^reference/" \
+            | grep -v "^VERSION$" \
+            | grep -v "^CHANGELOG\.md$" \
+            || true)
+
+          if [ -z "$NON_EXEMPT" ]; then
+            echo "✅ Only exempt files changed — no version bump required"
+            exit 0
+          fi
+
+          if [ "$NEEDS_BUMP" = "false" ]; then
+            echo "✅ No template/setup changes — no version bump required"
+            exit 0
+          fi
+
+          # ── Check that VERSION and CHANGELOG.md were updated ──
+          VERSION_CHANGED=$(echo "$CHANGED" | grep -c "^VERSION$" || true)
+          CHANGELOG_CHANGED=$(echo "$CHANGED" | grep -c "^CHANGELOG\.md$" || true)
+
+          ERRORS=""
+          if [ "$VERSION_CHANGED" = "0" ]; then
+            ERRORS="${ERRORS}  ❌ VERSION file not updated\n"
+          fi
+          if [ "$CHANGELOG_CHANGED" = "0" ]; then
+            ERRORS="${ERRORS}  ❌ CHANGELOG.md not updated\n"
+          fi
+
+          if [ -n "$ERRORS" ]; then
+            echo ""
+            echo "━━━ Version Check Failed ━━━"
+            echo ""
+            echo "This PR modifies template or setup files but did not"
+            echo "update the version tracking files:"
+            echo ""
+            echo -e "$ERRORS"
+            echo ""
+            echo "Please:"
+            echo "  1. Bump the version in VERSION"
+            echo "  2. Add an entry to CHANGELOG.md under [Unreleased]"
+            echo ""
+            echo "Semver guide for this toolkit:"
+            echo "  Patch (0.x.Y): typo fixes, bug fixes, wording improvements"
+            echo "  Minor (0.X.0): new skills/agents, features, template rewrites"
+            echo "  Major (X.0.0): config schema breaks, output structure changes"
+            echo ""
+            echo "See: .github/copilot-instructions.md and README.md for the semver policy"
+            exit 1
+          fi
+
+          echo "✅ Version check passed — VERSION and CHANGELOG.md updated"

@@ -1,0 +1,87 @@
+# {{project.name}} - Access Control Architecture
+
+> Authentication, authorization, middleware patterns, and data isolation for {{project.full_name}}.
+
+---
+
+## Authentication
+
+**Provider**: {{tech.auth.provider}}
+**Strategy**: {{tech.auth.strategy}}
+**Token Type**: {{tech.auth.token_type}}
+
+<!-- Describe your authentication flow -->
+
+---
+
+## Authorization Pattern
+
+### Backend Middleware Chain
+
+{{patterns.auth.description}}
+
+```
+{{patterns.auth.backend_chain}}
+```
+
+**Middleware components:**
+- **Authenticate**: `{{patterns.auth.authenticate}}`
+- **Authorize**: `{{patterns.auth.authorize}}`
+- **Audit**: `{{patterns.auth.audit}}`
+
+### Frontend Authorization
+
+```
+{{patterns.auth.frontend_check}}
+```
+
+---
+
+## Roles & Permissions
+
+{{domain.roles_table}}
+
+See [Role_Permission_Matrix.md](Role_Permission_Matrix.md) for the complete matrix.
+
+---
+
+{{#if patterns.isolation.enabled}}
+## Data Isolation
+
+**Strategy**: {{patterns.isolation.strategy}}
+**Isolation Field**: `{{patterns.isolation.field}}`
+
+{{patterns.isolation.description}}
+
+### Enforcement Rules
+
+1. **All database queries** must filter by `{{patterns.isolation.field}}`
+2. **API responses** must only include data for the authenticated user's scope
+3. **Frontend components** must scope data requests appropriately
+4. **Tests** must verify isolation between tenants
+
+### Example
+
+```sql
+-- ✅ Correct: includes isolation filter
+SELECT * FROM resource WHERE {{patterns.isolation.field}} = $1;
+
+-- ❌ Wrong: missing isolation filter
+SELECT * FROM resource;
+```
+{{/if}}
+
+---
+
+## Error Handling
+
+Standard error response format:
+
+```
+{{patterns.error_format}}
+```
+
+---
+
+> **Note**: This file is a template. Fill in with your actual access control
+> patterns, roles, and security requirements.

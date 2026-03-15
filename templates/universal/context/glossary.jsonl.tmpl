@@ -1,0 +1,11 @@
+// Domain glossary for {{project.name}}
+// Format: one JSON object per line
+// Fields: term, type (acronym|entity|business_term|role|status), definition, context, related_terms, needs_review
+// Populate via @Setup-Wizard agent + SME review
+//
+// Example:
+// {"term": "API", "type": "acronym", "definition": "Application Programming Interface", "context": "technical", "related_terms": ["REST", "endpoint"], "needs_review": false}
+// {"term": "SSO", "type": "acronym", "definition": "Single Sign-On", "context": "authentication", "related_terms": ["OAuth", "SAML"], "needs_review": false}
+// {"term": "Agreement", "type": "entity", "definition": "A contract between an organization and the program", "context": "core business entity, used for data isolation", "related_terms": ["Organization", "Participant"], "needs_review": true}
+// {"term": "Participant", "type": "entity", "definition": "An entity enrolled in the program", "context": "UI labels, API fields, database tables", "related_terms": ["Agreement", "Provider"], "needs_review": true}
+// {"term": "Active", "type": "status", "definition": "Entity is currently operational", "context": "Lifecycle state for agreements and participants", "related_terms": ["Draft", "Closed"], "needs_review": false}

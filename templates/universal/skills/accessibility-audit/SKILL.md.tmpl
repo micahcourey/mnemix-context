@@ -1,0 +1,343 @@
+---
+name: accessibility-audit
+description: Audit frontend components for WCAG 2.2 Level AA accessibility compliance. Use when reviewing templates, UI components, or checking accessibility.
+---
+
+# Accessibility Audit (WCAG 2.2)
+
+## Scanning Methodology
+
+Scan components **directly** using code comprehension — do not rely on regex-based scripts. Follow this structured procedure for each component:
+
+1. **Read the component's HTML template** in full — understand the complete DOM structure
+2. **Read the component's TypeScript class** — check `@Input()` bindings, dynamic ARIA attributes, programmatic focus management, conditional rendering (`*ngIf`, `*ngSwitch`)
+3. **Walk through WCAG-CHECKLIST.yaml criteria systematically** — evaluate each applicable criterion against the template in context (not pattern matching)
+4. **Check parent/child component relationships** — accessible names may come from parent bindings, projected content (`<ng-content>`), or wrapper components
+5. **Classify each finding** using the severity calibration and image classification rules below
+6. **Self-validate** every finding before reporting (see Self-Validation section)
+
+## Context Files
+
+Consult [AGENTS.md](AGENTS.md) for the project knowledge routing table.
+**For this skill, prioritize**: Compliance standards (L2 instructions) for WCAG rules and accessibility checklist, then system architecture (L3 context) for frontend component structure.
+
+## Reference Documentation
+
+| Reference | Content |
+|-----------|---------|
+| [WCAG Checklist](references/WCAG-CHECKLIST.yaml) | WCAG 2.2 Level AA success criteria |
+| [ICT Testing Baseline](references/TESTING-BASELINE.yaml) | 24 baseline accessibility tests with procedures |
+| [A11y Guide](references/ANGULAR-A11Y-GUIDE.md) | {{tech_stack.frontend.framework}} accessibility patterns |
+
+## Instructions
+
+Audit {{tech_stack.frontend.framework}} components for WCAG 2.2 Level AA accessibility compliance.
+
+## Key WCAG Criteria
+
+| Criterion | Level | Requirement |
+|-----------|-------|-------------|
+| 1.1.1 Non-text Content | A | Images, icons have alt text |
+| 1.3.1 Info and Relationships | A | Semantic HTML, table headers |
+| 1.4.3 Contrast | AA | 4.5:1 text, 3:1 large text |
+| 2.1.1 Keyboard | A | All functionality keyboard accessible |
+| 2.4.4 Link Purpose | A | Link text is descriptive |
+| 2.4.7 Focus Visible | AA | Focus indicator visible |
+| 4.1.2 Name, Role, Value | A | Custom controls have ARIA |
+
+## Image Classification
+
+Do **not** apply a single "missing alt" check to all images. Classify each image into one of three categories and apply the correct remediation:
+
+### Decision Tree
+
+```
+Is the image inside a <a>, <button>, or other interactive element?
+  → YES: FUNCTIONAL — alt must describe the ACTION (what clicking does)
+  → NO: Does the image convey information not available in surrounding text?
+    → YES: INFORMATIONAL — alt must describe the CONTENT (what it shows)
+    → NO: DECORATIVE — use alt="" and aria-hidden="true"
+```
+
+### Classification Reference
+
+| Image Type | Detection Heuristic | Correct Treatment | Example |
+|-----------|---------------------|-------------------|---------|
+| **Functional** | Inside `<a>`, `<button>`, or interactive element; is the only content conveying the link/button purpose | `alt` describes the **action** | `<button><img src="delete.svg" alt="Delete item"></button>` |
+| **Informational** | Chart, graph, photo conveying meaning not in surrounding text | `alt` describes the **content** | `<img src="chart.png" alt="Q4 revenue increased 15% from Q3">` |
+| **Decorative** | Layout spacer, background flourish, icon with adjacent text already conveying meaning | `alt=""` + `aria-hidden="true"` | `<img src="divider.png" alt="" aria-hidden="true">` |
+
+### Common Misclassifications to Avoid
+
+- **Logo in a link**: Functional (not decorative) — alt should describe the link destination, e.g., `alt="Home page"`
+- **Icon next to text label**: Decorative if text already conveys meaning — use `alt=""` + `aria-hidden="true"`
+- **Chart/graph**: Informational — alt must summarize the data; use `aria-describedby` for detailed description
+- **Avatar/profile photo**: Informational if it's the primary identifier; decorative if name text is adjacent
+
+## Common Component Patterns
+
+### Tables
+
+```html
+<!-- ✅ ACCESSIBLE -->
+<table aria-label="Data results">
+  <thead>
+    <tr>
+      <th scope="col">Status</th>
+      <th scope="col">Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        <span aria-label="Active status">✓</span>
+        <span>Active</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ❌ VIOLATION - Missing aria-label, icon without text -->
+<table>
+  <td><span>✓</span></td>
+</table>
+```
+
+### Forms
+
+```html
+<!-- ✅ ACCESSIBLE -->
+<label for="email">Email Address</label>
+<input type="email" 
+       id="email" 
+       name="email"
+       aria-describedby="email-hint email-error">
+<span id="email-hint">Enter your work email</span>
+<span id="email-error" role="alert" *ngIf="hasError">
+  Valid email required
+</span>
+
+<!-- ❌ VIOLATION - No label, using placeholder only -->
+<input type="email" placeholder="Email">
+```
+
+### Buttons & Icons
+
+```html
+<!-- ✅ ACCESSIBLE -->
+<button aria-label="Delete item" (click)="onDelete()">
+  <svg aria-hidden="true"><!-- icon --></svg>
+</button>
+
+<!-- ❌ VIOLATION - Icon button without label -->
+<button (click)="onDelete()">
+  <svg><!-- icon --></svg>
+</button>
+```
+
+### Dialogs/Modals
+
+```html
+<!-- ✅ ACCESSIBLE -->
+<div role="dialog" 
+     aria-label="Confirm deletion" 
+     aria-describedby="dialog-desc"
+     aria-modal="true">
+  <p id="dialog-desc">Are you sure you want to delete this item?</p>
+</div>
+```
+
+## Keyboard Navigation
+
+### Requirements
+- All interactive elements must be focusable
+- Logical tab order (no tabindex > 0)
+- No keyboard traps
+- Skip links for repetitive content
+- Focus visible at all times
+
+```html
+<!-- ✅ Skip link for keyboard users -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- ✅ Focus management after route change -->
+<main id="main-content" tabindex="-1">
+  <!-- Page content -->
+</main>
+```
+
+## Color & Contrast
+
+### Requirements
+- 4.5:1 minimum contrast ratio for normal text
+- 3:1 for large text (18pt+ or 14pt bold)
+- 3:1 for UI components and graphics
+- Color not sole method of conveying information
+
+```css
+/* ✅ ACCESSIBLE - Sufficient contrast */
+.error-text {
+  color: #d32f2f;  /* 4.5:1 on white */
+}
+
+/* ❌ VIOLATION - Also needs icon or text pattern */
+.status-success { color: green; }
+.status-error { color: red; }
+
+/* ✅ ACCESSIBLE - Color + icon */
+.status-success::before { content: "✓ "; }
+.status-error::before { content: "✗ "; }
+```
+
+## Dynamic Content
+
+### Live Regions
+
+```html
+<!-- ✅ Announce status updates -->
+<div aria-live="polite" aria-atomic="true" class="visually-hidden">
+  {{ statusMessage }}
+</div>
+
+<!-- ✅ Error announcements -->
+<div aria-live="assertive" role="alert" *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>
+```
+
+### Loading States
+
+```html
+<!-- ✅ ACCESSIBLE loading indicator -->
+<div *ngIf="loading" 
+     role="status" 
+     aria-label="Loading data">
+  <span class="visually-hidden">Loading...</span>
+</div>
+```
+
+## Testing Tools
+
+- **JAWS/NVDA**: Screen reader testing
+- **axe DevTools**: Automated accessibility testing
+- **Lighthouse**: Chrome accessibility audit
+- **Color Contrast Analyzer**: Contrast checking
+
+## Self-Validation
+
+Before presenting findings, **self-validate every issue** to reduce false positives:
+
+### Step 1: Re-read in Context
+Re-read each flagged location in the **full file context** (not just the flagged line). Check at least 10 lines above and below.
+
+### Step 2: Check False Positive Indicators
+Dismiss a finding if any of these apply:
+- **Parent/sibling provides label**: A parent `<mat-form-field>` contains `<mat-label>`, or a wrapping `<label>` element exists
+- **`*ngIf` / `*ngSwitch` alternative**: A conditional branch provides an accessible version (e.g., `*ngIf="isLoading; else dataTable"`)
+- **Custom directive**: A directive like `[appAriaLabel]` or `[cdkAriaLabel]` dynamically sets ARIA attributes
+- **Adjacent visible text**: Text adjacent to an icon or image already conveys the same meaning
+- **Projected content**: `<ng-content>` slot receives accessible content from the parent component
+
+### Step 3: Assign Confidence
+Rate each validated finding:
+| Confidence | Meaning | When to Use |
+|------------|---------|-------------|
+| **High** | Verified violation — no possible provider of accessible name/role | Missing alt with no parent label, keyboard trap confirmed |
+| **Medium** | Likely violation — but dynamic binding or runtime state could resolve | `[attr.aria-label]` bound to variable not visible in template |
+| **Low** | Possible violation — requires runtime verification | Contrast depends on theme, focus timing not determinable statically |
+
+### Step 4: Suppression Support
+Honor `<!-- a11y-ignore: reason -->` comments in templates. When found:
+- Exclude the associated element from the violations table
+- Include it in the **Reviewed & Dismissed** section with the stated reason
+- If the suppression reason is inadequate, note this in the report
+
+## Runtime Validation Guidance
+
+Some issues **cannot be fully verified through static analysis**. Flag these explicitly and provide runtime test guidance.
+
+### Issues Requiring Runtime Tools
+
+| Issue Category | Why Runtime Needed | Recommended Tool |
+|---------------|-------------------|------------------|
+| Contrast ratios | Depend on computed styles, CSS variables, theme | axe DevTools, Color Contrast Analyser |
+| Dynamic content visibility | `*ngIf` toggled content, lazy-loaded modules | Browser DevTools, axe DevTools |
+| Focus management | Timing-dependent, route change behavior | Manual keyboard testing |
+| Live region announcements | AT + browser combination dependent | JAWS + Chrome, NVDA + Firefox |
+| Dialog focus trapping | CDK trap behavior, timing | Manual keyboard testing |
+
+### axe-core Test Snippets
+
+Generate axe-core test snippets for components with Medium/Low confidence findings:
+
+```typescript
+import { axe, toHaveNoViolations } from 'jasmine-axe';
+
+beforeEach(() => jasmine.addMatchers(toHaveNoViolations));
+
+it('should pass axe accessibility checks', async () => {
+  const fixture = TestBed.createComponent(MyComponent);
+  fixture.detectChanges();
+  const results = await axe(fixture.nativeElement);
+  expect(results).toHaveNoViolations();
+});
+```
+
+### Manual AT Verification Table
+
+Include a manual verification table for findings that require screen reader or keyboard testing:
+
+```markdown
+| # | Component | Test With | What to Verify |
+|---|-----------|-----------|----------------|
+| 1 | DataTable | JAWS + Chrome | Column headers announced when navigating cells |
+| 2 | DeleteDialog | Keyboard | Focus moves to dialog on open, returns to trigger on close |
+| 3 | StatusBanner | NVDA + Firefox | Live region announces status update on change |
+| 4 | SearchFilter | VoiceOver + Safari | Combobox role and expanded state announced |
+```
+
+## Severity Calibration
+
+Classify every finding by **user workflow impact**, not just WCAG level.
+The key distinction: Critical = **blocks task completion entirely** vs. High = **major usability barrier** the user can still work around.
+
+| Severity | Criteria | Examples |
+|----------|----------|---------|
+| 🔴 Critical | **Blocks task completion** — prevents screen reader from accessing required content, prevents keyboard-only navigation, prevents form submission or navigation | Keyboard trap with no escape, form cannot be submitted, entire content region invisible to screen reader |
+| 🟠 High | **Major usability barrier** — incorrect programmatic structure, incorrect heading structure affecting navigation, missing form labels on required inputs | Missing form labels, missing alt on functional images, incorrect heading hierarchy, missing table headers |
+| 🟡 Medium | **Partial compliance** — missing enhancement but workaround exists, improper semantic structure but content still readable | Insufficient contrast, vague link text, missing `aria-sort`, `aria-expanded` missing but state still perceivable |
+| 🔵 Low | **Improvement suggestion** — cosmetic issue, best-practice enhancement | Missing skip link on simple page, `role="presentation"` preferred over `aria-hidden` |
+
+> **Calibration note:** Missing form labels and missing alt on functional images are **High**, not Critical, because the user can still navigate the page — they just can't determine the control's purpose. Critical is reserved for issues that make a workflow **completely impassable** (e.g., keyboard trap, entire region hidden from AT).
+
+## Report Format
+
+```markdown
+# Accessibility Audit
+
+**Status**: ✅ COMPLIANT / ❌ VIOLATIONS FOUND
+**WCAG Level**: AA
+**Components Audited**: X components
+
+## Issues Found
+
+| Sev | Issue | WCAG | Evidence | AT Impact | Fix |
+|-----|-------|------|----------|-----------|-----|
+| 🔴 Critical | Keyboard trap in modal | 2.1.2 (F10) | `<div (click)="close()">` at dialog.html:12 — no keyboard handler | Keyboard user cannot escape modal; must reload page | Add `(keydown.escape)="close()"` and `cdkTrapFocus` |
+| 🟠 High | Image missing alt | 1.1.1 (F65) | `<img src="chart.png">` at dashboard.html:45 | JAWS announces "image" with no context; user cannot determine chart content | Add `alt="Q4 revenue trend showing 15% increase"` |
+| 🟡 Medium | Insufficient contrast | 1.4.3 | `.hint-text { color: #999 }` at styles.scss:88 — ratio 2.8:1 on #fff | Low-vision users cannot read hint text | Change to `color: #767676` (4.5:1) |
+| 🔵 Low | Missing skip link | 2.4.1 | No skip link in app.component.html | Keyboard users must tab through nav on every page | Add `<a class="skip-link" href="#main-content">Skip to main content</a>` |
+
+## Recommendations
+1. [Specific, actionable fix per issue — included in table above]
+
+## Reviewed & Dismissed
+Issues suppressed via `<!-- a11y-ignore: reason -->` or dismissed during self-validation.
+
+| Location | Suppression Reason | Reviewer |
+|----------|--------------------|----------|
+| dialog.html:5 | `<!-- a11y-ignore: label provided by parent component binding -->` | Agent self-validation |
+
+**Screen Reader Tested**: Yes/No
+**Keyboard Navigation Tested**: Yes/No
+```

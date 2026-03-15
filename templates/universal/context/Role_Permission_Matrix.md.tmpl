@@ -1,0 +1,31 @@
+# {{project.name}} - Role & Permission Matrix
+
+> Role definitions, permission mappings, and access levels for {{project.full_name}}.
+> **Structured data** is in companion JSONL files for efficient lookups.
+
+## Data Files
+
+| File | Contains | Format |
+|------|----------|--------|
+| [roles.jsonl](roles.jsonl) | All roles with descriptions and categories | JSONL |
+| [permissions.jsonl](permissions.jsonl) | All permissions with descriptions | JSONL |
+| [role_permissions.jsonl](role_permissions.jsonl) | Role-to-permission mappings | JSONL |
+
+## Access Levels
+
+| Level | Description | Example |
+|-------|-------------|---------|
+| **Full Access** | Create, read, update, delete | Admin users |
+| **Read/Write** | Create, read, update (no delete) | Editors |
+| **Read Only** | View data only | Viewers |
+| **No Access** | Cannot access feature | Unauthorized users |
+
+## How to Query
+
+To check if a role has a permission, search `role_permissions.jsonl`:
+```
+grep "ROLE_CODE" .ai/context/role_permissions.jsonl
+```
+
+> **Note**: Populate the JSONL files using the `@Setup-Wizard` agent or manually.
+> See JSONL format examples in each file.

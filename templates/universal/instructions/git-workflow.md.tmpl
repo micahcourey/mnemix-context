@@ -1,0 +1,42 @@
+# Git Workflow
+
+> L2 instruction module — loaded when working on branches, commits, or PRs.
+
+## Creating Branches
+
+```bash
+git checkout {{conventions.default_branch}}
+git pull origin {{conventions.default_branch}}
+git checkout -b {{conventions.branch_pattern}}
+```
+
+## Commit Message Format
+
+Format: **{{conventions.commit_format}}**
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+Closes {{conventions.branch_pattern}}
+```
+
+**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+## Pull Request Guidelines
+
+- Reference the ticket/issue in the PR title
+- Include a summary of changes
+- Add screenshots for UI changes
+- Ensure CI passes before requesting review
+- Squash commits on merge
+
+## Default Branch
+
+- **Main branch**: `{{conventions.default_branch}}`
+- Never push directly to `{{conventions.default_branch}}`
+
+---
+
+**See also**: [context/Project_Structure.md](../context/Project_Structure.md) for repo layout and release workflow notes.

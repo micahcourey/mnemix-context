@@ -1,0 +1,23 @@
+---
+name: 'Engineer'
+description: Full-stack development, database design, DevOps, and migrations for {{project.name}} applications
+argument-hint: feature, schema, pipeline, migration, or infrastructure task
+tools: ['codebase', 'read', 'createFile', 'createDirectory', 'list', 'search', 'edit', 'runCommands', 'fetch', 'changes', 'problems']
+handoffs:
+  - label: Run Compliance Scan
+    agent: Compliance Guardian
+    prompt: Scan the generated code for security and accessibility issues.
+    send: false
+  - label: Generate Tests
+    agent: Tester
+    prompt: Generate comprehensive unit and E2E tests for the feature.
+    send: false
+  - label: Review Code
+    agent: Reviewer
+    prompt: Review the generated code for project standards and best practices.
+    send: false
+---
+
+> **Document Generation**: When asked to create any document (PRD, RFC, ADR, README, technical design, migration guide, etc.), always load and follow [skills/document-generator/SKILL.md](skills/document-generator/SKILL.md) for standardized templates.
+
+{{#include shared/personas/engineer.md.tmpl}}

@@ -1,0 +1,150 @@
+# Updating Context Files
+
+This directory contains the **Context Updater** agent and update metadata. Use it to keep your `.ai/context/` files in sync as your project evolves — without re-running the full bootstrap process.
+
+## Who Should Run Updates
+
+Context updates are typically performed by the **Tech Lead or Architect**, not every developer. The workflow is:
+
+1. Tech lead runs the update agent
+2. Reviews and approves changes
+3. Commits updated context files
+4. Creates a PR for team review
+5. After merge, the full dev team pulls the latest context
+
+## When to Update
+
+Run the update agent when:
+- Database schema has changed (new tables, columns, migrations)
+- New API endpoints have been added or removed
+- Roles or permissions have been modified
+- New repositories have been added to the workspace
+- Framework or dependency versions have been upgraded
+- The team suspects context files are stale
+
+## How to Run
+
+### 1. Copy the update agent into your agents directory
+
+```bash
+cp .ai/update/update.agent.md .github/agents/context-updater.agent.md
+```
+
+Reload VS Code:
+
+> **Cmd+Shift+P** → `Developer: Reload Window`
+
+### 2. Run the Context Updater
+
+1. Open **Copilot Chat**
+2. Select **Claude Sonnet 4.6** (or Opus 4.6 for large projects)
+3. Select **Context Updater** from the chat mode dropdown
+4. Send: **"Update context files"**
+
+The agent will:
+- Scan the codebase for changes since the last update
+- Present a detailed change report (new tables, endpoints, roles, etc.)
+- Ask for your approval before modifying any files
+- Update data files (`.jsonl`, `.yaml`) directly
+- Suggest changes to prose files (`.md`) for your review
+- Detect version drift in `toolkit.config.yaml`
+
+### 3. Review and commit
+
+```bash
+git add .ai/
+git commit -m "chore: update AI context files"
+git push origin your-branch
+```
+
+### 4. Clean up (optional)
+
+Remove the update agent from the agents directory after the PR is merged — it doesn't need to be in every developer's agent dropdown:
+
+```bash
+rm .github/agents/context-updater.agent.md
+```
+
+It remains here in `.ai/update/` for next time.
+
+## Update Metadata
+
+After each update, the agent writes `.ai/update/.last-updated` with:
+- Timestamp of the last update
+- Which files were updated
+- Summary of changes detected
+
+This helps the agent know what changed between updates.
+
+## Update Strategy
+
+| File Type | Strategy | Safe? |
+|-----------|----------|-------|
+| `.jsonl` data files | Full regenerate (add new, remove stale) | Yes — structured data |
+| `.yaml` data files | Full regenerate (merge new) | Yes — structured data |
+| `.md` prose files | **Suggest only** — user reviews diff | Yes — never auto-overwrites |
+
+---
+
+## Toolkit Upgrades
+
+When the `mnemix-context` repository receives new templates (improved agents, new skills, updated instructions), you can pull those changes into your project without losing customizations.
+
+### How It Works
+
+Every time `generate.py` runs, it writes `.ai/update/.toolkit-manifest.json` tracking:
+- The toolkit version and commit hash
+- Every generated file with its template hash and output hash
+- The file category (script, template-output, context-stub, etc.)
+
+When you run `--upgrade`, the tool compares the manifest against current templates and your files:
+
+| Template Changed? | You Modified Output? | Action |
+|---|---|---|
+| No | No | Skip (nothing to do) |
+| No | Yes | Skip (your changes only) |
+| **Yes** | No | **Auto-regenerate** (safe) |
+| **Yes** | Yes | **Conflict — show diff, you decide** |
+| New template | N/A | **Offer to add** |
+| Template removed | N/A | **Warn, offer to remove** |
+
+### Upgrade Workflow
+
+```bash
+# 1. Pull latest toolkit
+cd mnemix-context && git pull
+
+# 2. Preview what would change
+python3 mnemix-context/setup/generate.py --upgrade --dry-run
+
+# 3. Apply upgrades interactively
+python3 mnemix-context/setup/generate.py --upgrade
+
+# 4. Non-interactive (CI-friendly: auto-accept safe, skip conflicts)
+python3 mnemix-context/setup/generate.py --upgrade --non-interactive
+
+# 5. Review and commit
+git add .ai/
+git commit -m "chore: upgrade mnemix-context to vX.Y.Z"
+```
+
+### Via the Context Updater Agent
+
+1. Open **Copilot Chat** → select **Context Updater**
+2. Say **"Update context files"**
+3. The agent checks for toolkit upgrades first (Phase 0)
+4. If upgrades are available, it previews them and asks for approval
+5. Then proceeds to the normal context update flow
+
+### File Categories
+
+| Category | Examples | Upgrade Behavior |
+|---|---|---|
+| `script` | `setup-links.sh`, `update/scripts/*.py` | Always auto-regenerated |
+| `update-meta` | `update/update.agent.md`, `update/README.md` | Always auto-regenerated |
+| `template-output` | `AGENTS.md`, `agents/*.agent.md`, `skills/**`, `instructions/*.md` | Diff review if you modified |
+| `context-stub` | `context/*.md`, `context/*.jsonl`, `context/*.yaml` | **Never touched** |
+| `toolkit.config.yaml` | **Suggest only** — show drift | Yes — user decides |
+| Instructions / Adapters | Skip unless config changes | N/A |
+
+**Key guarantee:** The agent never overwrites prose `.md` files without explicit approval. Your team's custom documentation is always preserved.

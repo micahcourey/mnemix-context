@@ -1,0 +1,178 @@
+---
+name: sensitive-data-detection
+description: Scan code for sensitive data exposure in logs, API responses, and error handlers. Use when reviewing data handling or checking compliance with data protection requirements.
+---
+
+# Sensitive Data Detection
+
+Run detection script: `scripts/detect-sensitive-data.py <file_or_directory>`
+
+## Context Files
+
+Consult [AGENTS.md](AGENTS.md) for the project knowledge routing table.
+**For this skill, prioritize**: Compliance standards (L2 instructions) for sensitive data rules, then access control, role/permission matrix, and database schema context files (L3) for project-specific data flows.
+
+## Reference Documentation
+
+| Reference | Content |
+|-----------|---------|
+| Inline skill guidance | Common sensitive field categories, logging pitfalls, and safe response patterns |
+
+## Instructions
+
+Scan code for sensitive data exposure to ensure compliance in {{project.name}} applications.
+
+## Sensitive Data Identifiers
+
+{{#if domain.sensitive_data}}
+**{{domain.sensitive_data}} identifiers to detect:**
+{{/if}}
+
+| Category | Common Field Names |
+|----------|-------------------|
+| Names | first_name, last_name, full_name |
+| National IDs | ssn, tax_id, national_id |
+| Dates of Birth | dob, date_of_birth, birth_date |
+| Addresses | address, street, city, zip, postal_code |
+| Contact Info | phone, mobile, fax, email |
+| Financial | account_number, routing_number, card_number |
+| Authentication | password, token, api_key, secret |
+{{#if domain.industry}}
+<!-- Add industry-specific identifiers below -->
+<!-- Healthcare: patient_id, diagnosis, medication -->
+<!-- Finance: account_number, routing_number, balance -->
+<!-- Education: student_id, grades, disciplinary_records -->
+{{/if}}
+
+## Violation Patterns
+
+### 1. Sensitive Data in Console Logs
+
+```typescript
+// ❌ VIOLATION: Sensitive data logged
+console.log('User data:', { ssn: '123-45-6789', dob: '1990-01-01' });
+console.log('Processing record:', record);  // Full object
+console.error('Failed to save', entity);
+
+// ✅ COMPLIANT: Reference IDs only
+console.log('Processing record', { id: 123 });
+console.error('Failed to save', { id: 123, error: error.message });
+```
+
+### 2. Sensitive Data in Error Responses
+
+```typescript
+// ❌ VIOLATION: Data returned to client
+catch (error) {
+  res.status(500).json({ 
+    error: error.message,
+    data: entity  // Includes sensitive fields
+  });
+}
+
+// ✅ COMPLIANT: Generic error, log details server-side
+catch (error) {
+  logger.error('Save failed', { entityId, error: error.message });
+  res.status(500).json({ 
+    error: 'Failed to save record',
+    message: 'Please try again or contact support.'
+  });
+}
+```
+
+### 3. Sensitive Data in API Responses
+
+```typescript
+// ❌ VIOLATION: Returning raw database row
+return res.json({ data: entity });
+
+// ✅ COMPLIANT: Explicit field selection (allowlist)
+return res.json({
+  data: {
+    id: entity.id,
+    name: entity.display_name,
+    status: entity.status
+    // Exclude: SSN, DOB, address, phone, etc.
+  }
+});
+```
+
+### 4. Sensitive Data in Frontend State
+
+```typescript
+// ❌ VIOLATION: Storing full entity in state
+this.store.dispatch(loadEntity({ entity: fullEntity }));
+
+// ✅ COMPLIANT: Store only necessary non-sensitive fields
+this.store.dispatch(loadEntity({ 
+  entity: {
+    id: fullEntity.id,
+    name: fullEntity.displayName,
+    status: fullEntity.status
+  }
+}));
+```
+
+### 5. Sensitive Data in URLs/Query Parameters
+
+```typescript
+// ❌ VIOLATION: Sensitive data in URL
+router.get('/api/users/ssn/:ssn', ...);
+this.http.get(`/api/search?email=${email}`);
+
+// ✅ COMPLIANT: Use IDs only
+router.get('/api/users/:userId', ...);
+this.http.post('/api/search', { userId });
+```
+
+{{#if patterns.isolation.enabled}}
+## Data Isolation
+
+**Critical for multi-tenant security:**
+
+```typescript
+// ❌ VIOLATION: Cross-tenant data leakage
+const records = await db('resources')
+  .where({ id });
+
+// ✅ COMPLIANT: Tenant filter always required
+const records = await db('resources')
+  .where({ 
+    id,
+    {{patterns.isolation.field}}: req.user.tenantId  // REQUIRED
+  });
+```
+{{/if}}
+
+## Audit Trail Requirements
+
+All sensitive data access should include:
+- `created_by_user_id` / `created_dt`
+- `modified_by_user_id` / `modified_dt`
+{{#if patterns.auth_middleware.enabled}}
+- Audit middleware in the route chain
+{{/if}}
+
+## Report Format
+
+```markdown
+# Sensitive Data Detection Scan
+
+**Status**: ✅ COMPLIANT / ❌ VIOLATION
+**Files Scanned**: X files
+
+## Exposure Risks
+
+| Severity | Issue | Location | Data Type |
+|----------|-------|----------|-----------|
+| 🔴 Critical | SSN in console.log | service.ts:45 | National ID |
+| 🔴 Critical | Raw entity returned | api.ts:123 | Multiple |
+| 🟠 High | Missing tenant filter | repo.ts:67 | All data |
+
+## Remediation Required
+1. Replace console.log with ID-only logging
+2. Add explicit field selection to API response
+3. Add tenant filter to query
+
+**Compliance Risk**: High - Immediate action required
+```

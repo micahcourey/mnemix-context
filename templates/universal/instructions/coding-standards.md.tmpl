@@ -1,0 +1,64 @@
+# Coding Standards
+
+> L2 instruction module — loaded when working on code style, types, error handling, or testing.
+
+## {{tech.frontend.language}} / {{tech.backend.language}}
+
+- Use strict mode (`strict: true`)
+- Explicit type annotations — no `any`
+- Follow framework-specific style guides
+- Maximum {{conventions.max_fn_lines}} lines per function
+
+## Error Handling
+
+Standard error format:
+```
+{{patterns.error_format}}
+```
+
+- Use appropriate HTTP status codes
+- Log errors with context (never log sensitive data: {{domain.sensitive_data}})
+- Return structured errors to clients
+
+## API Design
+
+- **Style**: {{tech.backend.api_style}}
+- Use plural nouns for resource endpoints: `/api/resources`, not `/api/resource`
+- Version APIs in the path when breaking changes are introduced: `/api/v2/resources`
+- Use HTTP methods semantically: `GET` (read), `POST` (create), `PUT` (full update), `PATCH` (partial update), `DELETE` (remove)
+- Return consistent response shapes — always include pagination metadata for list endpoints
+- Paginate list endpoints by default: `?page=1&pageSize=25` or `?offset=0&limit=25`
+- Use query parameters for filtering, sorting, and field selection: `?status=active&sort=name&fields=id,name`
+- Return `201 Created` for successful creation with the created resource in the body
+- Return `204 No Content` for successful deletion
+- Include `Location` header on `201` responses pointing to the new resource
+
+## Testing
+
+- Minimum **{{conventions.coverage_target}}%** code coverage for new code
+- Frontend testing: {{tech.frontend.testing}} | Backend testing: {{tech.backend.testing}}
+- See [instructions/testing-conventions.md](testing-conventions.md) for full testing rules, patterns, and checklists
+
+## Quality Standards
+
+- Use actual project patterns from codebase (not generic examples)
+- Include authorization checks for all protected operations
+- Add audit trails for sensitive data changes
+- Verify code against context files before proposing changes
+
+## Confidence Scoring
+
+When proposing changes, include a confidence score:
+
+| Score | Meaning |
+|-------|---------|
+| **90-100%** | Verified pattern, minimal assumptions |
+| **70-89%** | Sound approach, some uncertainties |
+| **50-69%** | Reasonable but significant unknowns |
+| **< 50%** | Experimental, needs validation |
+
+**Skip for**: Simple factual answers, reading existing code, established patterns.
+
+---
+
+**See also**: [instructions/testing-conventions.md](testing-conventions.md) for detailed testing rules | [context/Testing_Strategy.md](../context/Testing_Strategy.md) for project-specific testing patterns and coverage approach.

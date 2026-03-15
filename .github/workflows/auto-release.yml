@@ -1,0 +1,85 @@
+# ============================================================================
+# Auto Release — Create Git Tags and GitHub Releases
+# ============================================================================
+# When VERSION changes on main (via merged PR), automatically creates a git
+# tag and GitHub Release with the changelog excerpt.
+#
+# Triggers: Push to main that changes VERSION
+# Creates: Git tag vX.Y.Z + GitHub Release with changelog notes
+# ============================================================================
+
+name: Auto Release
+
+on:
+  push:
+    branches: [main]
+    paths: [VERSION]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version
+        id: version
+        run: echo "version=$(cat VERSION | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: tag_check
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate semver format
+        if: steps.tag_check.outputs.exists == 'false'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "❌ Invalid semver format: $VERSION"
+            echo "   Expected: X.Y.Z (e.g., 0.1.0, 1.0.0)"
+            exit 1
+          fi
+          echo "✅ Valid semver: $VERSION"
+
+      - name: Extract changelog for this version
+        id: changelog
+        if: steps.tag_check.outputs.exists == 'false'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Try to extract the section for this specific version
+          NOTES=$(awk "/^## \\[${VERSION}\\]/{flag=1; next} /^## \\[/{flag=0} flag" CHANGELOG.md)
+
+          # Fall back to [Unreleased] section if version section not found
+          if [ -z "$NOTES" ]; then
+            NOTES=$(awk '/^## \[Unreleased\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md)
+          fi
+
+          # Trim leading/trailing whitespace
+          NOTES=$(echo "$NOTES" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+
+          if [ -z "$NOTES" ]; then
+            NOTES="Release v${VERSION}"
+          fi
+
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        if: steps.tag_check.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.notes }}
+          draft: false
+          prerelease: ${{ startsWith(steps.version.outputs.version, '0.') }}

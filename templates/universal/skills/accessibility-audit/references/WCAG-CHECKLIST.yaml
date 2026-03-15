@@ -1,0 +1,235 @@
+# WCAG 2.2 Level AA Checklist
+# Quick reference for WCAG 2.2 criteria relevant to Angular + Material apps.
+# Use: Agent lookup when auditing components for accessibility compliance.
+
+# ─── Perceivable ──────────────────────────────────────────────────────────
+
+perceivable:
+  - id: "1.1.1"
+    name: Non-text Content
+    level: A
+    rule: All non-text content has a text alternative
+    image_classification:
+      functional:
+        description: Image inside interactive element; alt describes the ACTION
+        heuristic: "Inside <a>, <button>, or element with click/keydown handlers"
+        compliant: '<a routerLink="/home"><img src="logo.png" alt="Home page"></a>'
+        violation: '<a routerLink="/home"><img src="logo.png"></a>'
+      informational:
+        description: Image conveys meaning not available in surrounding text; alt describes the CONTENT
+        heuristic: "Chart, graph, photo with unique information"
+        compliant: '<img src="chart.png" alt="Q4 revenue increased 15% from Q3">'
+        violation: '<img src="chart.png" alt="chart">'
+      decorative:
+        description: Layout spacer, flourish, or icon with adjacent text already conveying meaning
+        heuristic: "No unique information; adjacent text covers the meaning"
+        compliant: '<img src="divider.png" alt="" aria-hidden="true">'
+        violation: '<img src="divider.png" alt="divider image">'
+    decision_tree: |
+      Is the image inside a link or button?
+        → YES: Functional — alt must describe the ACTION
+        → NO: Does it convey info not in surrounding text?
+          → YES: Informational — alt must describe the CONTENT
+          → NO: Decorative — use alt="" and aria-hidden="true"
+    compliant:
+      - '<img src="logo.png" alt="Application Logo">'
+      - '<mat-icon aria-label="Delete item">delete</mat-icon>'
+      - '<button mat-icon-button aria-label="Close dialog"><mat-icon>close</mat-icon></button>'
+    violation:
+      - '<img src="logo.png">'
+      - '<mat-icon>delete</mat-icon>'
+      - '<button mat-icon-button><mat-icon>close</mat-icon></button>'
+
+  - id: "1.3.1"
+    name: Info and Relationships
+    level: A
+    rule: Structure and relationships are programmatically determinable
+    compliant:
+      - |
+        <mat-form-field>
+          <mat-label>Email Address</mat-label>
+          <input matInput formControlName="email" aria-describedby="email-hint">
+          <mat-hint id="email-hint">Enter your work email</mat-hint>
+        </mat-form-field>
+      - '<mat-table [dataSource]="data" aria-label="Compliance actions">'
+    violation:
+      - '<input matInput placeholder="Email">'
+      - '<mat-table [dataSource]="data">'
+
+  - id: "1.4.3"
+    name: Contrast (Minimum)
+    level: AA
+    rule: "Text: 4.5:1 ratio; Large text: 3:1 ratio"
+    compliant:
+      - "color: #b71c1c on #fff → 7.1:1 ✓"
+    violation:
+      - "color: #ccc on #fff → 1.6:1 ✗"
+
+  - id: "1.4.11"
+    name: Non-text Contrast
+    level: AA
+    rule: "UI components and graphical objects: 3:1 contrast ratio"
+    compliant:
+      - "outline: 2px solid #1976d2"
+    violation:
+      - "outline: 1px solid #ddd"
+
+# ─── Operable ─────────────────────────────────────────────────────────────
+
+operable:
+  - id: "2.1.1"
+    name: Keyboard
+    level: A
+    rule: All functionality is keyboard accessible
+    compliant:
+      - '<button mat-raised-button (click)="onSubmit()">Submit</button>'
+      - |
+        <div tabindex="0" role="button"
+             (click)="onSubmit()"
+             (keydown.enter)="onSubmit()"
+             (keydown.space)="onSubmit()">Submit</div>
+    violation:
+      - '<div class="clickable" (click)="onSubmit()">Submit</div>'
+
+  - id: "2.4.4"
+    name: Link Purpose
+    level: A
+    rule: Link purpose is clear from link text or context
+    compliant:
+      - '<a routerLink="/participants/123">View John Smith''s details</a>'
+      - '<a routerLink="/docs" aria-label="Documentation for compliance module">Learn more</a>'
+    violation:
+      - '<a routerLink="/participants/123">Click here</a>'
+      - '<a routerLink="/docs">Learn more</a>'
+
+  - id: "2.4.7"
+    name: Focus Visible
+    level: AA
+    rule: Keyboard focus indicator is visible
+    compliant:
+      - "button:focus-visible { outline: 2px solid #1976d2; outline-offset: 2px; }"
+    violation:
+      - "*:focus { outline: none; }"
+
+# ─── Understandable ───────────────────────────────────────────────────────
+
+understandable:
+  - id: "3.3.1"
+    name: Error Identification
+    level: A
+    rule: Input errors are identified and described in text
+    compliant:
+      - |
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email">
+          <mat-error *ngIf="form.get('email')?.hasError('required')">Email is required</mat-error>
+          <mat-error *ngIf="form.get('email')?.hasError('email')">Enter a valid email address</mat-error>
+        </mat-form-field>
+    violation:
+      - '<input [class.error]="hasError" matInput>'
+
+  - id: "3.3.2"
+    name: Labels or Instructions
+    level: A
+    rule: Form inputs have labels
+    compliant:
+      - |
+        <mat-form-field>
+          <mat-label>Agreement ID</mat-label>
+          <input matInput formControlName="agreementId">
+          <mat-hint>Format: A-XXXX-XXXX</mat-hint>
+        </mat-form-field>
+
+# ─── Robust ───────────────────────────────────────────────────────────────
+
+robust:
+  - id: "4.1.2"
+    name: Name, Role, Value
+    level: A
+    rule: Custom components have accessible names and roles
+    compliant:
+      - '<mat-checkbox formControlName="agreed">I agree to terms</mat-checkbox>'
+      - '<mat-select aria-label="Select status"><mat-option value="active">Active</mat-option></mat-select>'
+      - |
+        <div role="progressbar"
+             aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"
+             aria-label="Upload progress"></div>
+
+# ─── Angular Material Specifics ──────────────────────────────────────────
+
+angular_material:
+  dialogs:
+    compliant: 'this.dialog.open(Component, { ariaLabel: "Confirm deletion", ariaDescribedBy: "confirm-dialog-description" })'
+    violation: "this.dialog.open(Component)"
+
+  snackbars:
+    compliant: 'this.snackBar.open("Saved successfully", "Close", { politeness: "polite" })'
+    note: "Use 'polite' or 'assertive' for screen reader announcement"
+
+  loading_states:
+    compliant: |
+      <div *ngIf="loading" role="status" aria-live="polite">
+        <mat-spinner diameter="24" aria-label="Loading"></mat-spinner>
+        <span class="visually-hidden">Loading data...</span>
+      </div>
+
+# ─── Testing Tools ────────────────────────────────────────────────────────
+
+testing_tools:
+  automated:
+    - {name: axe DevTools, type: browser extension}
+    - {name: WAVE, type: browser extension}
+    - {name: Lighthouse, type: Chrome DevTools}
+  manual:
+    - {name: JAWS, type: screen reader}
+    - {name: NVDA, type: screen reader}
+    - {name: VoiceOver, type: "macOS built-in"}
+
+# ─── WCAG Techniques Reference ───────────────────────────────────────────
+# Use technique IDs in reports: e.g., "1.1.1 (F65)" or "4.1.2 (H91)"
+
+techniques:
+  failures:
+    - {id: F2, criterion: "1.3.1", desc: "Using CSS to include text that conveys information"}
+    - {id: F10, criterion: "2.1.2", desc: "No mechanism to escape keyboard trap"}
+    - {id: F30, criterion: "1.1.1, 1.2.1", desc: "Using text alternatives that do not serve equivalent purpose"}
+    - {id: F36, criterion: "3.2.2", desc: "Auto-submitting form on last field change"}
+    - {id: F40, criterion: "2.2.1, 2.2.4", desc: "Using meta redirect with time limit"}
+    - {id: F41, criterion: "2.2.1, 2.2.4, 3.2.5", desc: "Using meta refresh to reload page"}
+    - {id: F42, criterion: "1.3.1, 2.1.1", desc: "Using scripting to emulate links"}
+    - {id: F54, criterion: "2.1.1", desc: "Using only pointing-device events without keyboard equivalent"}
+    - {id: F59, criterion: "4.1.2", desc: "Using script to make div/span a link without role"}
+    - {id: F65, criterion: "1.1.1", desc: "Omitting alt attribute on img element"}
+    - {id: F68, criterion: "4.1.2", desc: "Missing accessible name or role on UI component"}
+    - {id: F77, criterion: "4.1.1", desc: "Duplicate values of id attribute"}
+    - {id: F78, criterion: "2.4.7", desc: "Styling to remove focus outline without visible alternative"}
+    - {id: F79, criterion: "4.1.2", desc: "Focus change without user initiation"}
+    - {id: F82, criterion: "3.3.2", desc: "Visually formatting a set of phone number fields without label"}
+    - {id: F83, criterion: "1.4.3, 1.4.6", desc: "Using background images with insufficient contrast"}
+    - {id: F86, criterion: "4.1.2", desc: "Not providing accessible names for form fields with required"}
+    - {id: F89, criterion: "2.4.4, 2.4.9, 4.1.2", desc: "Using null alt on image with no accessible name"}
+    - {id: F92, criterion: "1.3.1", desc: "Using role presentation on content with semantic meaning"}
+  sufficient:
+    - {id: G94, criterion: "1.1.1", desc: "Short text alternative for non-text content"}
+    - {id: G95, criterion: "1.1.1", desc: "Short text alternatives with long description"}
+    - {id: G130, criterion: "2.4.6", desc: "Providing descriptive headings"}
+    - {id: G131, criterion: "2.4.6, 3.3.2", desc: "Providing descriptive labels"}
+    - {id: G162, criterion: "1.3.1", desc: "Using labels to maximize predictability of relationships"}
+    - {id: G200, criterion: "2.4.4, 2.4.9", desc: "Opening new windows only when best from accessibility perspective"}
+    - {id: H2, criterion: "1.1.1", desc: "Combining adjacent image and text links for same resource"}
+    - {id: H24, criterion: "1.1.1, 2.4.4", desc: "Providing text alternatives for image map areas"}
+    - {id: H25, criterion: "2.4.2", desc: "Providing descriptive title element"}
+    - {id: H32, criterion: "3.2.2", desc: "Providing submit buttons"}
+    - {id: H33, criterion: "2.4.4, 2.4.9", desc: "Supplementing link text with title attribute"}
+    - {id: H36, criterion: "1.1.1", desc: "Using alt on images used as submit buttons"}
+    - {id: H37, criterion: "1.1.1", desc: "Using alt attribute on img element"}
+    - {id: H42, criterion: "1.3.1", desc: "Using h1-h6 to identify headings"}
+    - {id: H43, criterion: "1.3.1", desc: "Using id and headers to associate data cells with header cells"}
+    - {id: H44, criterion: "1.1.1, 1.3.1, 3.3.2, 4.1.2", desc: "Using label to associate text with form control"}
+    - {id: H51, criterion: "1.3.1", desc: "Using table markup for tabular information"}
+    - {id: H63, criterion: "1.3.1", desc: "Using scope to associate header and data cells"}
+    - {id: H65, criterion: "1.1.1, 1.3.1, 3.3.2, 4.1.2", desc: "Using title attribute to identify form controls without label"}
+    - {id: H67, criterion: "1.1.1", desc: "Using null alt on decorative images"}
+    - {id: H71, criterion: "1.3.1, 3.3.2", desc: "Providing a description for groups of form controls using fieldset/legend"}
+    - {id: H91, criterion: "2.1.1, 4.1.2", desc: "Using HTML form controls and links"}

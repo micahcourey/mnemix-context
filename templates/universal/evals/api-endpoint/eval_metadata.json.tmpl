@@ -1,0 +1,65 @@
+{
+  "skill_name": "api-endpoint",
+  "evals": [
+    {
+      "id": 1,
+      "name": "create-rest-endpoint",
+      "prompt": "Create a GET /api/participants/:id endpoint in {{project.name}} that returns participant details.",
+      "expected_output": "Route file with full middleware chain, controller, service, and types.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "has-auth-middleware",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "verifyTokenRetrieveUser",
+          "description": "Endpoint includes authentication middleware"
+        },
+        {
+          "id": "has-permission-check",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "validateRequiredPrivilege",
+          "description": "Endpoint includes authorization middleware"
+        },
+        {
+          "id": "has-audit",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "auditUserAction",
+          "description": "Endpoint includes audit middleware"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "crud-with-isolation",
+      "prompt": "Create a full CRUD API for a 'compliance_actions' resource in {{project.name}} with {{patterns.isolation.field}}-based data isolation. Include routes, controller, service, and types.",
+      "expected_output": "Complete CRUD with data isolation filtering.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "has-agreement-filter",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "{{patterns.isolation.field}}",
+          "description": "Queries filter by isolation field for data isolation"
+        },
+        {
+          "id": "has-middleware-chain",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "verifyTokenRetrieveUser",
+          "description": "All routes include authentication middleware"
+        },
+        {
+          "id": "has-error-handling",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "statusCode|status_code|error",
+          "description": "Error handling follows structured error format"
+        }
+      ]
+    }
+  ]
+}

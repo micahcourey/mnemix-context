@@ -1,0 +1,95 @@
+---
+name: frontend-component
+description: Generate {{tech.frontend.framework}} components with {{tech.frontend.ui_library}}, authorization checks, state management, and accessibility.
+---
+
+# Frontend Component Generator
+
+## Context Files
+
+Consult [AGENTS.md](AGENTS.md) for the project knowledge routing table.
+**For this skill, prioritize**: Coding standards, naming conventions, and testing strategy context files.
+
+## When This Skill Activates
+
+This skill activates when:
+- Creating new frontend components
+- Working with component files (`.component.ts`, `.tsx`, etc.)
+- Discussing UI patterns or component architecture
+
+## Instructions
+
+### Step 1: Discovery
+
+Before generating a component:
+1. **Search for similar components** in the codebase
+2. **Check UI library** for existing {{tech.frontend.ui_library}} patterns
+3. **Identify authorization requirements** for the feature
+4. **Review design system** tokens and shared styles
+
+### Step 2: Generate Component
+
+Every component MUST include:
+
+1. **Authorization check** (if feature is protected):
+```
+{{patterns.auth.frontend_check}}
+```
+
+2. **Proper lifecycle management**:
+   - Initialize data on component mount
+   - Clean up subscriptions/listeners on destroy
+   - Handle loading and error states
+
+3. **Accessibility (WCAG 2.2 AA)**:
+   - Semantic HTML elements
+   - ARIA labels on interactive elements
+   - Keyboard navigation support
+   - Focus management for dynamic content
+   - Color contrast compliance (4.5:1 minimum)
+
+4. **{{tech.frontend.ui_library}} components**:
+   - Use library components over custom HTML where possible
+   - Follow library theming patterns
+   - Use design system tokens for spacing, colors, typography
+
+### Step 3: Generate Template/Markup
+
+- Use semantic HTML (`<main>`, `<nav>`, `<section>`, `<article>`)
+- Add `aria-label` to all interactive elements
+- Use `aria-live` for dynamic content regions
+- Include loading indicators with accessible announcements
+- Add form labels and error associations
+
+### Step 4: Generate Styles
+
+- Use design system tokens (CSS custom properties)
+- Follow responsive design patterns
+- Ensure color contrast meets WCAG AA standards
+- Use relative units (rem, em) over fixed pixels
+
+### Step 5: Generate Tests
+
+Create unit tests covering:
+- Component creation
+- Authorization states (granted vs denied)
+- Data loading (success, error, empty)
+- User interactions (clicks, form submissions)
+- Accessibility (ARIA attributes present)
+- Cleanup on destroy
+
+Target: {{conventions.coverage_target}}%+ coverage
+
+## Component Checklist
+
+- [ ] Authorization check for protected features
+- [ ] Subscription/listener cleanup on destroy
+- [ ] Loading state handling
+- [ ] Error state handling
+- [ ] Empty state handling
+- [ ] Accessibility: ARIA labels
+- [ ] Accessibility: Keyboard navigation
+- [ ] Accessibility: Focus management
+- [ ] Responsive design
+- [ ] Unit tests with {{conventions.coverage_target}}%+ coverage
+- [ ] Component prefix: `{{tech.frontend.component_prefix}}`

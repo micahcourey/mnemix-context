@@ -1,0 +1,137 @@
+---
+name: e2e-test
+description: Generate end-to-end test specifications and step implementations. Use when creating E2E tests or working with test automation frameworks.
+---
+
+# E2E Test Generator
+
+Scaffold test: `scripts/scaffold-e2e.sh <feature-name>`
+
+See [E2E reference](references/E2E-PATTERNS.md) for step implementation patterns.
+
+## Context Files
+
+Consult [AGENTS.md](AGENTS.md) for the project knowledge routing table.
+**For this skill, prioritize**: Testing conventions (L2 instructions) for prescriptive rules, then Testing Strategy (L3 context) for project-specific patterns, domain glossary (for test personas), and role/permission context files (for authorization scenarios).
+
+## Instructions
+
+Generate end-to-end test specifications and step implementations for {{tech_stack.frontend.framework}} applications following project conventions.
+
+> **Note**: This project uses {{tech_stack.testing.e2e_framework}} for E2E testing.
+
+## Project Structure
+
+```
+e2e/
+├── specs/                          # Test specification files
+│   ├── [feature-name]/
+│   │   ├── [feature]-happy-path.spec
+│   │   ├── [feature]-negative.spec
+│   │   └── [feature]-authorization.spec
+│   └── shared/                     # Reusable test concepts
+├── steps/                          # Step implementations
+│   ├── framework/                  # Core framework (DO NOT MODIFY)
+│   └── features/                   # Feature-specific steps
+│       └── [feature]-steps.[ext]   # NEW: Add your steps here
+├── config/                         # Environment configs
+│   ├── dev/
+│   └── staging/
+└── fixtures/                       # Test data files
+```
+
+## Test Specification Template
+
+```markdown
+# [Feature Name]
+
+[Brief description of what this spec tests]
+
+tags: regression, [feature-tag]
+
+## Setup
+* Login as a valid user
+* Navigate to "[Feature]" page
+
+## Scenario: [Descriptive scenario name]
+tags: smoke, happy-path
+
+* [Action step]
+* Verify [expected result]
+
+## Scenario: [Negative case description]
+tags: negative
+
+* [Setup steps]
+* [Action that should fail]
+* Verify error message "[expected error]" is displayed
+
+{{#if patterns.isolation.enabled}}
+## Scenario: Data isolation verification
+tags: security, isolation
+
+* Login as "TENANT_A_USER"
+* Navigate to "[Feature]" page
+* Search for "[TENANT_B_ONLY_DATA]"
+* Verify no results are displayed
+* Logout
+{{/if}}
+```
+
+## Step Implementation Template
+
+```
+// steps/features/[feature]-steps.[ext]
+
+/**
+ * Step implementations for [Feature Name] E2E tests
+ */
+
+// Navigate to feature page
+step('Navigate to <featureName> page', async (featureName) => {
+  await navigateTo(featureName);
+  await waitForPageLoad();
+});
+
+// Verify text is displayed
+step('Verify <text> is displayed on the page', async (expectedText) => {
+  await verifyTextPresent(expectedText);
+});
+
+// Enter value in field
+step('Enter <value> in <field> field', async (value, field) => {
+  await enterText(field, value);
+});
+
+// Click button
+step('Click <buttonName> button', async (buttonName) => {
+  await clickButton(buttonName);
+});
+```
+
+## Test Categories
+
+**Required for each feature:**
+1. **Happy Path** - Core functionality works correctly
+2. **Negative Cases** - Error handling, validation
+{{#if patterns.auth_middleware.enabled}}
+3. **Authorization** - Permission-based access control
+{{/if}}
+{{#if patterns.isolation.enabled}}
+4. **Data Isolation** - Multi-tenant data security
+{{/if}}
+
+## Tagging Strategy
+
+| Tag | Purpose |
+|-----|---------|
+| `smoke` | Quick validation tests |
+| `regression` | Full test suite |
+| `happy-path` | Expected success scenarios |
+| `negative` | Error and edge cases |
+{{#if patterns.auth_middleware.enabled}}
+| `security` | Authorization tests |
+{{/if}}
+{{#if patterns.isolation.enabled}}
+| `isolation` | Data isolation tests |
+{{/if}}

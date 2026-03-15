@@ -1,0 +1,102 @@
+# Testing Conventions
+
+> L2 instruction module — loaded when writing tests, reviewing test coverage, or setting up test infrastructure.
+
+## Coverage Requirements
+
+- Minimum **{{conventions.coverage_target}}%** code coverage for all new code
+- Critical paths (auth, data mutations, financial calculations) should target **100%** coverage
+- Every PR must include tests for new or changed logic
+
+## Test File Organization
+
+- Test files live alongside source files: `feature.service.spec.ts` next to `feature.service.ts`
+- Use the project's test file suffix: `.spec.ts`, `.test.ts`, or `.test.py`
+- Group tests by feature/component, not by test type
+- E2E tests live in a dedicated directory (see L3 context for project-specific structure)
+
+## What to Test
+
+| Dimension | What to Cover |
+|-----------|---------------|
+| **Happy path** | Normal user workflow succeeds |
+| **Negative cases** | Invalid inputs, missing data, error responses |
+| **Boundary cases** | Min/max values, empty arrays, null/undefined |
+| **Authorization** | Verify access granted for correct roles, denied for others |
+{{#if patterns.isolation.enabled}}
+| **Data isolation** | User only sees data scoped to their `{{patterns.isolation.field}}` |
+{{/if}}
+| **Async operations** | Observables, promises, timeouts |
+| **Error handling** | Service failures, network errors, validation errors |
+
+## Unit Test Patterns
+
+### Framework-Specific
+
+- **Frontend**: {{tech.frontend.testing}}
+- **Backend**: {{tech.backend.testing}}
+
+### Structure
+
+Follow **Arrange → Act → Assert** (AAA) for every test:
+
+```
+// Arrange — set up test data and mocks
+// Act — call the method under test
+// Assert — verify the result
+```
+
+### Mocking Rules
+
+- Mock **external boundaries** (HTTP, database, third-party SDKs) — never real calls in unit tests
+- Use framework-native mocking (e.g., `jasmine.SpyObj`, `jest.fn()`, `unittest.mock`)
+- Mock at the **closest boundary** — prefer mocking the service over mocking the HTTP client
+- **Never mock the class under test** — if you need to mock a method, it may belong in a different class
+- Reset mocks between tests to avoid state leaks
+- Use typed mocks — avoid `as any` in mock setup
+
+### Naming
+
+- Describe blocks: class or component name
+- Test names: `should [expected behavior] when [condition]`
+- Example: `should return 403 when user lacks EDIT privilege`
+
+## E2E Test Conventions
+
+- Test **user-visible behavior**, not implementation details
+- Use page objects or step abstractions to keep specs readable
+- Test the critical path first, then edge cases
+- Never depend on data created by another test — each test sets up its own state
+- Tag tests by category (`@smoke`, `@regression`, `@authorization`) for selective runs
+
+## Test Data
+
+- Use **synthetic data only** — never use production or real user data
+- Create test fixtures/factories for reusable data setup
+- Sensitive data fields must use obviously fake values (`"Jane Doe"`, `"000-00-0000"`)
+- Clean up test data after each test run
+
+## Authorization Test Patterns
+
+For every protected feature, test:
+
+1. **Authorized user can perform the action** — correct role / privilege
+2. **Unauthorized user is blocked** — missing role returns 403
+3. **Unauthenticated user is blocked** — missing token returns 401
+{{#if patterns.isolation.enabled}}
+4. **Cross-tenant access is blocked** — user A cannot see user B's data
+{{/if}}
+
+## Quality Checklist
+
+- [ ] Tests cover happy path AND error scenarios
+- [ ] Mocks are typed and reset between tests
+- [ ] No hardcoded test data that could become stale
+- [ ] Authorization scenarios tested (granted + denied)
+- [ ] Async operations properly awaited/subscribed
+- [ ] No `fdescribe`, `fit`, `xit`, or `xdescribe` left in committed tests
+- [ ] Coverage meets **{{conventions.coverage_target}}%** threshold
+
+---
+
+**See also**: [context/Testing_Strategy.md](../context/Testing_Strategy.md) for project-specific test pyramid, frameworks, mocking strategy, and CI integration details.

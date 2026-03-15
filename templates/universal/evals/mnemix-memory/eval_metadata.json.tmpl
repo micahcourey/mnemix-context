@@ -1,0 +1,104 @@
+{
+  "skill_name": "mnemix-memory",
+  "evals": [
+    {
+      "id": 1,
+      "name": "session-recall-on-start",
+      "prompt": "I need to fix a bug in {{project.name}} where the getParticipants endpoint returns duplicate records. Start by looking at the route handler.",
+      "expected_output": "Agent runs Mnemix recall before starting work on the bug.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "recall-fired",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "mnemix .* recall",
+          "description": "Agent ran Mnemix recall at session start"
+        },
+        {
+          "id": "recall-before-work",
+          "type": "deterministic",
+          "check": "transcript_order",
+          "first": "mnemix .* recall",
+          "second": "participant",
+          "description": "Recall happened before the agent started working on the task"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "entry-stored-after-fix",
+      "prompt": "The bug was a missing DISTINCT in the SQL query. Fix it by adding DISTINCT to the SELECT in getParticipants.",
+      "expected_output": "Agent fixes the bug and stores a Mnemix entry summarizing the fix.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "add-fired",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "mnemix .* remember",
+          "description": "Agent ran Mnemix remember after completing the task"
+        },
+        {
+          "id": "tag-used",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "--tag (bug-fix|fix|error)",
+          "description": "Entry includes an appropriate tag"
+        },
+        {
+          "id": "entry-has-context",
+          "type": "llm-judge",
+          "check": "The Mnemix entry includes: the component name, what the bug was, and how it was fixed",
+          "description": "Entry is rich enough to be useful in future recall"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "recall-negative-control",
+      "prompt": "What's the difference between Angular's OnInit and OnChanges lifecycle hooks?",
+      "expected_output": "Agent answers the question directly. Recall is still expected (mandatory protocol) but no add is needed.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "recall-still-fires",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "mnemix .* recall",
+          "description": "Recall fires even for simple questions (mandatory protocol)"
+        },
+        {
+          "id": "no-unnecessary-add",
+          "type": "deterministic",
+          "check": "transcript_not_contains",
+          "pattern": "mnemix .* remember",
+          "description": "No entry stored for a simple Q&A (no task was completed)"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "multi-task-session",
+      "prompt": "I need to: 1) Add a new field 'status' to the compliance_actions table migration, 2) Update the ComplianceAction TypeScript interface to include the new field, 3) Add the field to the GET /compliance-actions response.",
+      "expected_output": "Agent completes all three tasks and stores at least one Mnemix entry summarizing the work.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "recall-at-start",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "mnemix .* recall",
+          "description": "Recall fires at session start"
+        },
+        {
+          "id": "add-at-end",
+          "type": "deterministic",
+          "check": "transcript_contains",
+          "pattern": "mnemix .* remember",
+          "description": "At least one entry stored after completing tasks"
+        }
+      ]
+    }
+  ]
+}

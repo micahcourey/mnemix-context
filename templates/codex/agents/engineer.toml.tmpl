@@ -1,0 +1,17 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Engineer — Codex agent role config (ConfigProfile)
+# Project: {{project.name}}
+# ─────────────────────────────────────────────────────────────────────────────
+# Reference this file from config.toml with:
+#   [agents.engineer]
+#   description = "Full-stack development for {{project.name}}"
+#   config_file = "agents/engineer.toml"
+#   nickname_candidates = ["eng", "engineer", "dev"]
+#
+# ─── Persona ─────────────────────────────────────────────────────────────────
+{{#include-commented shared/personas/engineer.md.tmpl}}
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Role-specific overrides (applied on top of global config.toml settings)
+approval_policy = "on-request"
+sandbox_mode    = "workspace-write"

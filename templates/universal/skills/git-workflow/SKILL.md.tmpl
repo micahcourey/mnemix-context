@@ -1,0 +1,163 @@
+---
+name: git-workflow
+description: Git and GitHub workflow automation for {{project.name}} repositories. Use when working with branches, PRs, commits, or repository management.
+---
+
+# Git Workflow Skill
+
+Automate common Git and GitHub workflows following {{project.name}} conventions.
+
+## Context Files
+
+Consult [AGENTS.md](AGENTS.md) for the project knowledge routing table.
+**For this skill, prioritize**: Project structure (for repo layout and release notes) and the git-workflow instruction module.
+
+## When This Skill Activates
+
+This skill activates when:
+- Working with `.git` operations or discussing git workflow
+- Creating branches, commits, or pull requests
+- Discussing version control or release management
+
+## Quick Commands
+
+| Script | Purpose |
+|--------|----------|
+| `scripts/new-branch.sh` | Create feature branch from {{conventions.default_branch}} |
+| `scripts/commit.sh` | Commit with conventional format |
+| `scripts/create-pr.sh` | Create pull request via GitHub CLI |
+| `scripts/create-or-update-pr.sh` | Idempotent PR create/update |
+| `scripts/pr-status.sh` | Check PR status and CI checks |
+| `scripts/update-branch.sh` | Rebase/merge from {{conventions.default_branch}} |
+| `scripts/sync-master.sh` | Sync local {{conventions.default_branch}} branch |
+| `scripts/cleanup-branches.sh` | Remove merged local branches |
+
+### Create Feature Branch
+```bash
+scripts/new-branch.sh {{conventions.branch_pattern}}
+```
+
+### Commit with Conventional Format
+```bash
+git commit -m "feat(component): add new feature
+
+Detailed description here
+
+Closes {{conventions.branch_pattern}}"
+```
+
+## Instructions
+
+### Branch Naming Convention
+
+All branches must follow the project ticket pattern:
+
+```
+{{conventions.branch_pattern}}
+```
+
+### Creating a New Branch
+
+```bash
+git checkout {{conventions.default_branch}}
+git pull origin {{conventions.default_branch}}
+git checkout -b {{conventions.branch_pattern}}
+git push -u origin {{conventions.branch_pattern}}
+```
+
+### Commit Message Format
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+Closes {{conventions.branch_pattern}}
+```
+
+**Types**:
+| Type | Description |
+|------|-------------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation only |
+| `style` | Formatting, no code change |
+| `refactor` | Code restructuring |
+| `test` | Adding/updating tests |
+| `chore` | Build, CI, dependencies |
+
+**Scope**: Component or area affected
+
+### Pull Request Workflow
+
+**Creating a PR with GitHub CLI**:
+```bash
+# Create PR
+gh pr create --title "{{conventions.branch_pattern}}: Feature description" \
+  --base {{conventions.default_branch}}
+
+# Create draft PR
+gh pr create --draft --title "{{conventions.branch_pattern}}: WIP Feature"
+
+# Request review
+gh pr edit --add-reviewer username1,username2
+```
+
+**PR Title Format**:
+```
+{{conventions.branch_pattern}}: Brief description of change
+```
+
+### Merging Strategy
+
+Use **squash merging** for feature branches:
+
+```bash
+gh pr merge --squash --delete-branch
+```
+
+### Keeping Branch Updated
+
+```bash
+# Merge strategy
+git checkout {{conventions.default_branch}}
+git pull origin {{conventions.default_branch}}
+git checkout -
+git merge {{conventions.default_branch}}
+
+# Rebase strategy
+git fetch origin
+git rebase origin/{{conventions.default_branch}}
+```
+
+### Cleanup After Merge
+
+```bash
+# Delete local merged branches
+git branch --merged {{conventions.default_branch}} | grep -v "{{conventions.default_branch}}" | xargs git branch -d
+
+# Prune remote tracking branches
+git fetch --prune
+```
+
+### Useful GitHub CLI Commands
+
+```bash
+# List open PRs
+gh pr list
+
+# Check PR status and CI checks
+gh pr status
+gh pr checks
+
+# View PR diff
+gh pr diff
+
+# Approve PR
+gh pr review --approve
+
+# Request changes
+gh pr review --request-changes --body "Changes needed..."
+```

@@ -1,0 +1,180 @@
+# ============================================================================
+# Example: Angular + Node.js + AWS Stack
+# ============================================================================
+# A single-repo application with Angular frontend, Express APIs,
+# Aurora PostgreSQL, and JWT-based auth.
+# ============================================================================
+
+project:
+  name: "MyProject"
+  full_name: "My Enterprise Project"
+  description: "Enterprise web application for managing business operations"
+  org_name: "Acme"
+  repo_url: "github.com/acme/my-project"
+  jira_key: "MYPROJ"
+
+tech_stack:
+  frontend:
+    framework: "Angular 18"
+    language: "TypeScript 5.x"
+    ui_library: "Angular Material"
+    state_management: "RxJS"
+    testing: "Jasmine/Karma"
+    component_prefix: "app"
+  backend:
+    framework: "Express"
+    language: "TypeScript"
+    runtime: "Node.js 20"
+    testing: "Jest"
+    api_style: "REST"
+  databases:
+    - name: "Aurora PostgreSQL"
+      type: "relational"
+      purpose: "Primary data store"
+    - name: "DynamoDB"
+      type: "key-value"
+      purpose: "Session store and caching"
+    - name: "OpenSearch"
+      type: "search"
+      purpose: "Full-text search"
+  cloud:
+    provider: "AWS"
+    compute: "Lambda, ECS Fargate"
+    key_services: ["API Gateway", "S3", "CloudFront", "SQS", "SNS"]
+  auth:
+    provider: "Okta SSO"
+    strategy: "JWT + RBAC"
+    token_type: "JWT"
+  cicd:
+    platform: "Jenkins"
+    secondary: "AWS CodeBuild"
+    containerized: true
+
+patterns:
+  auth_middleware:
+    description: "JWT verification + role-based access control middleware chain"
+    backend_chain: |
+      router.post('/api/resource',
+        authMiddleware.verifyToken,
+        permissionsMiddleware.checkPermission('CREATE_RESOURCE'),
+        auditMiddleware.logAction('RESOURCE_CREATED'),
+        controller.createResource
+      );
+    frontend_check: |
+      const hasAccess = this.authService.hasPermission('EDIT_RESOURCE');
+      if (!hasAccess) {
+        this.router.navigate(['/unauthorized']);
+      }
+    middleware_names:
+      authenticate: "authMiddleware.verifyToken"
+      authorize: "permissionsMiddleware.checkPermission"
+      audit: "auditMiddleware.logAction"
+
+  data_isolation:
+    enabled: true
+    strategy: "row-level filtering"
+    isolation_field: "org_id"
+    description: "All queries must include org_id filter from JWT claims for tenant isolation"
+
+  error_format: |
+    { "error": string, "message": string, "statusCode": number }
+
+  database_conventions:
+    table_naming: "snake_case"
+    audit_columns: ["created_at", "created_by", "updated_at", "updated_by"]
+    soft_delete: true
+    soft_delete_column: "deleted_at"
+    migration_tool: "Liquibase"
+
+domain:
+  industry: "SaaS"
+  sensitive_data_types: ["PII", "SSN"]
+  compliance_frameworks: ["SOC 2", "GDPR"]
+  key_entities: ["Organization", "User", "Order", "Product"]
+  business_models: []
+  domain_terminology:
+    tenant: "An organization using the platform"
+    workspace: "A logical grouping of resources within a tenant"
+  user_roles: ["ADMIN", "MANAGER", "EDITOR", "VIEWER"]
+  role_descriptions:
+    ADMIN: "Full platform access, user management, billing"
+    MANAGER: "Team management, reporting, approvals"
+    EDITOR: "Create and edit content, submit for review"
+    VIEWER: "Read-only access to dashboards and reports"
+
+conventions:
+  branch_pattern: "MYPROJ-XXXX"
+  commit_format: "conventional"
+  default_branch: "main"
+  pr_template: true
+  test_coverage_target: 80
+  strict_typescript: true
+  max_function_lines: 30
+  naming:
+    services: "FeatureNameService"
+    components: "app-feature-name"
+
+context_files:
+  - name: "System Architecture"
+    file: "System_Architecture.md"
+    description: "System components, boundaries, integrations, data flows"
+    status: "todo"
+  - name: "Database Schema"
+    file: "Database_Schema.md"
+    description: "Database tables, relationships, sensitive fields"
+    status: "todo"
+  - name: "Project Structure"
+    file: "Project_Structure.md"
+    description: "Important directories, entry points, scripts, and ownership notes"
+    status: "todo"
+  - name: "Access Control"
+    file: "Access_Control.md"
+    description: "Auth middleware, role-based access, data isolation"
+    status: "todo"
+
+platforms:
+  agents_md: true
+  skills: true
+  context_files: true
+  copilot: true
+  opencode: false
+  codex: false
+  cursor: false
+  claude: false
+  cline: false
+  windsurf: false
+
+features:
+  agents:
+    engineer: true
+    reviewer: true
+    documentation: true
+    architect: true
+  skills:
+    api_endpoint: true
+    frontend_component: true
+    unit_test: true
+    e2e_test: true
+    security_scan: true
+    git_workflow: true
+    planning: true
+    query_optimizer: true
+    document_generator: true
+    accessibility_audit: true
+    phi_detection: false
+    skill_generator: true
+  integrations:
+    jira_mcp: false
+    mnemix: false                   # Optional external long-term memory via Mnemix
+  evals:
+    enabled: true
+    skills_to_eval: [mnemix-memory, api-endpoint, security-scan]
+
+mnemix:
+  session_strategy: "branch"
+  store_path: ".mnemix"
+  binary: "mnemix"
+  scope: "repo:my-project"
+  entry_conventions:
+    tags: [bug-fix, decision, discovery, error, refactor, pattern]
+    format: "[tag] component: description — details"

@@ -1,0 +1,374 @@
+# ICT Testing Baseline for Web
+# 24 baseline tests for accessibility conformance evaluation.
+# Source: ICT accessibility baseline
+# Use: Agent lookup when running accessibility audits against Angular apps.
+
+overview:
+  description: Standardized test procedures for evaluating accessibility conformance
+  principles:
+    - Tools-agnostic (can use any testing tools)
+    - Based on WCAG 2.0 Level A and AA Success Criteria
+    - Provides consistent, repeatable test results across agencies
+
+tests:
+  - id: 1
+    name: Keyboard Accessible
+    wcag: [2.1.1, 2.1.2]
+    checks: All functionality keyboard operable, no traps
+    procedures:
+      - Tab through all interactive elements
+      - Use Enter, Space, Arrow keys as appropriate
+      - Check no specific timing required for keystrokes
+      - Verify focus can be moved away from every component
+    angular_pattern:
+      compliant: '<button mat-button (click)="doAction()">Action</button>'
+      violation: '<div (click)="doAction()">Action</div>'
+
+  - id: 2
+    name: Focus
+    wcag: [2.4.3, 2.4.7, 3.2.1]
+    checks: Visible focus, logical order, no context change on focus
+    procedures:
+      - Verify visible focus indicator on each interactive element
+      - Verify revealed content (modals, menus) receives focus
+      - Verify focus returns to trigger when content closes
+      - Verify no unexpected context change on focus
+    angular_pattern:
+      compliant: "button:focus-visible { outline: 2px solid #005fcc; outline-offset: 2px; }"
+      violation: "button:focus { outline: none; }"
+
+  - id: 3
+    name: Non-Interference
+    wcag: [CR5]
+    checks: Audio, traps, flashes, auto-update don't block use
+    note: "Failure = Critical accessibility barrier"
+    sub_checks:
+      - "1.4.2: Auto-playing audio must be controllable"
+      - "2.1.2: No Keyboard Trap — focus must be escapable"
+      - "2.3.1: Three Flashes — no dangerous flashing"
+      - "2.2.2: Pause, Stop, Hide — moving content controllable"
+
+  - id: 4
+    name: Repetitive Content
+    wcag: [2.4.1, 3.2.3, 3.2.4]
+    checks: Skip links, consistent navigation
+    angular_pattern:
+      compliant: |
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+        <nav>...</nav>
+        <main id="main-content">...</main>
+
+  - id: 5
+    name: User Controls
+    wcag: [4.1.2]
+    checks: Name, role, state, value programmatically set
+    required_attributes:
+      - "Name: Accessible name describes purpose"
+      - "Role: Correct role (button, link, checkbox, etc.)"
+      - "State: Current state exposed (checked, expanded, disabled)"
+      - "Value: Current value exposed (slider position, input text)"
+    angular_pattern:
+      compliant: '<mat-slide-toggle [(ngModel)]="isOn">Toggle setting</mat-slide-toggle>'
+      violation: '<div class="toggle" (click)="toggle()">{{ isOn ? "On" : "Off" }}</div>'
+
+  - id: 6
+    name: Images
+    wcag: [1.1.1, 1.4.5, 4.1.2]
+    checks: Alt text, decorative marked, no images of text
+    sub_tests:
+      meaningful: '<img src="chart.png" alt="Q4 revenue increased 15% from Q3">'
+      decorative: '<img src="decoration.png" alt="">'
+      complex: '<img src="diagram.png" alt="System architecture" aria-describedby="arch-desc">'
+
+  - id: 7
+    name: Sensory Characteristics
+    wcag: [1.1.1, 1.3.3, 1.4.1]
+    checks: Not color-only, not shape-only
+    angular_pattern:
+      compliant: |
+        <input aria-describedby="error-msg" aria-invalid="true">
+        <span class="error-icon">⚠</span>
+        <span id="error-msg">This field is required</span>
+      violation: '<input class="error-field">  <!-- red border only -->'
+
+  - id: 8
+    name: Contrast
+    wcag: [1.4.3]
+    checks: "4.5:1 normal text, 3:1 large text"
+    thresholds:
+      normal_text: "4.5:1 (<18pt or <14pt bold)"
+      large_text: "3:1 (≥18pt or ≥14pt bold)"
+    exceptions: [logos, incidental text, decorative, disabled controls]
+    tools: [WebAIM Contrast Checker, Colour Contrast Analyser, browser DevTools]
+
+  - id: 9
+    name: Flashing
+    wcag: [2.3.1]
+    checks: "≤3 flashes/sec or below general flash threshold"
+
+  - id: 10
+    name: Forms
+    wcag: [1.1.1, 1.3.1, 2.4.6, 3.2.2, 3.3.1, 3.3.2, 3.3.3, 3.3.4, 4.1.2]
+    checks: Labels, errors, instructions
+    label_techniques:
+      - '<label for="email">Email address</label><input id="email">'
+      - '<input aria-label="Search participants">'
+      - '<input aria-labelledby="fname-label fname-req">'
+    error_pattern: |
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput [formControl]="emailControl">
+        <mat-error *ngIf="emailControl.hasError('required')">Email is required</mat-error>
+        <mat-error *ngIf="emailControl.hasError('email')">Enter a valid email address</mat-error>
+      </mat-form-field>
+
+  - id: 11
+    name: Page Titles
+    wcag: [2.4.2]
+    checks: "Descriptive <title> element"
+
+  - id: 12
+    name: Tables
+    wcag: [1.3.1, 4.1.2]
+    checks: Header associations, no layout table markup
+    patterns:
+      simple: '<th scope="col">Name</th>'
+      complex: '<td headers="h1 r1">$1.2M</td>'
+      layout: '<table role="presentation">'
+
+  - id: 13
+    name: Content Structure
+    wcag: [1.3.1, 2.4.6]
+    checks: Headings, lists programmatically marked
+    rules:
+      - Descriptive headings (not "More Information")
+      - Logical heading hierarchy (no skipped levels)
+      - Use <ul>/<ol> for lists, not styled divs
+
+  - id: 14
+    name: Links
+    wcag: [2.4.4, 4.1.2]
+    checks: Purpose determinable from text/context
+    compliant:
+      - '<a href="/report">View Q4 Compliance Report</a>'
+      - '<a href="/report">Read more <span class="sr-only">about Q4 Compliance Report</span></a>'
+    violation:
+      - '<a href="/report">Click here</a>'
+
+  - id: 15
+    name: Language
+    wcag: [3.1.1, 3.1.2]
+    checks: lang attribute on html element, language changes marked
+    pattern: '<html lang="en"> ... <span lang="es">Español</span>'
+
+  - id: 16
+    name: Audio/Video Only
+    wcag: [1.2.1]
+    checks: Transcripts, audio descriptions
+
+  - id: 17
+    name: Synchronized Media
+    wcag: [1.2.2, 1.2.3, 1.2.4, 1.2.5, 503.4]
+    checks: Captions, audio descriptions, player controls
+
+  - id: 18
+    name: CSS Positioning
+    wcag: [1.3.2]
+    checks: Meaningful sequence without CSS
+
+  - id: 19
+    name: Frames/iFrames
+    wcag: [4.1.2]
+    checks: Descriptive titles on frames
+
+  - id: 20
+    name: Alternate Version
+    wcag: [CAV]
+    checks: Equivalent, up-to-date, reachable
+
+  - id: 21
+    name: Timed Events
+    wcag: [1.4.2, 2.2.1, 2.2.2]
+    checks: Adjustable timing, pausable content, audio control
+    patterns:
+      session_timeout: Show warning dialog with extend option before expiration
+      auto_refresh: Provide pause/resume control for live data
+
+  - id: 22
+    name: Resize Text
+    wcag: [1.4.4]
+    checks: "200% zoom without loss of content or functionality"
+
+  - id: 23
+    name: Multiple Ways
+    wcag: [2.4.5]
+    checks: "≥2 ways to find pages (nav, search, sitemap)"
+
+  - id: 24
+    name: Parsing
+    wcag: [4.1.1]
+    checks: "Deprecated — always passes"
+
+# ─── Quick Reference: Common Failures ────────────────────────────────────
+
+common_failures:
+  - {issue: Missing alt text, test: 6, fix: 'Add meaningful alt or alt="" for decorative'}
+  - {issue: No focus indicator, test: 2, fix: "Use :focus-visible styles"}
+  - {issue: Color-only meaning, test: 7, fix: "Add text, icons, or patterns"}
+  - {issue: Missing form labels, test: 10, fix: "Use <label>, aria-label, or aria-labelledby"}
+  - {issue: Keyboard trap, test: 1, fix: "Ensure Escape or Tab can close overlays"}
+  - {issue: Low contrast, test: 8, fix: "Minimum 4.5:1 for text"}
+  - {issue: Missing skip links, test: 4, fix: 'Add "Skip to main content" link'}
+  - {issue: Ambiguous links, test: 14, fix: "Use descriptive link text"}
+  - {issue: Click-only handlers, test: 1, fix: "Add keyboard event handlers"}
+  - {issue: Missing page title, test: 11, fix: "Add descriptive <title>"}
+
+# Source: ICT Testing Baseline Portfolio v3.1, U.S. Access Board & GSA
+
+# ─── Runtime Validation ──────────────────────────────────────────────────
+# Issues that cannot be fully verified through static template analysis.
+# The agent should flag these explicitly and provide test guidance.
+
+runtime_validation:
+  description: >
+    Some accessibility issues depend on computed styles, runtime state,
+    or AT behavior that static analysis cannot determine. Flag these
+    issues with confidence "Low" and include the appropriate test procedure.
+
+  categories:
+    - id: contrast
+      name: Contrast Ratios
+      reason: Depend on computed CSS, variables, themes, and inherited styles
+      tools: [axe DevTools, Color Contrast Analyser, Chrome DevTools]
+      procedure: |
+        1. Open component in browser with target theme applied
+        2. Run axe DevTools scan or use Color Contrast Analyser
+        3. Check both light and dark theme variants if applicable
+        4. Verify against 4.5:1 (normal text) and 3:1 (large text) thresholds
+
+    - id: dynamic_content
+      name: Dynamic Content Visibility
+      reason: "*ngIf, *ngSwitch, lazy-loaded modules change DOM at runtime"
+      tools: [Browser DevTools, axe DevTools]
+      procedure: |
+        1. Trigger all conditional states (loading, error, empty, populated)
+        2. Run axe scan in each state
+        3. Verify ARIA attributes update correctly on state changes
+        4. Check that dynamically revealed content is announced by live regions
+
+    - id: focus_management
+      name: Focus Management
+      reason: Focus behavior is timing-dependent and varies by browser
+      tools: [Manual keyboard testing]
+      procedure: |
+        1. Tab through all interactive elements — verify logical order
+        2. Open dialogs/modals — verify focus moves into dialog
+        3. Close dialogs — verify focus returns to trigger element
+        4. Navigate routes — verify focus moves to main content or page heading
+        5. Check no focus traps exist (Tab and Shift+Tab can escape any element)
+
+    - id: live_regions
+      name: Live Region Announcements
+      reason: Behavior varies by AT + browser combination
+      tools: [JAWS + Chrome, NVDA + Firefox, VoiceOver + Safari]
+      procedure: |
+        1. Enable screen reader
+        2. Trigger the action that updates the live region
+        3. Verify announcement occurs with correct politeness (polite/assertive)
+        4. Verify aria-atomic behavior (full region vs. changed content only)
+        5. Test with at least two AT + browser combinations
+
+    - id: dialog_focus
+      name: Dialog Focus Trapping
+      reason: CDK focus trap behavior depends on timing and DOM state
+      tools: [Manual keyboard testing, JAWS]
+      procedure: |
+        1. Open dialog via keyboard (Enter/Space on trigger)
+        2. Verify focus moves to first focusable element or dialog itself
+        3. Tab through — verify focus stays within dialog boundary
+        4. Press Escape — verify dialog closes and focus returns to trigger
+        5. Verify dialog role and aria-label announced by screen reader
+
+  axe_core_integration:
+    description: Generate axe-core test for components with runtime-dependent findings
+    template: |
+      import { axe, toHaveNoViolations } from 'jasmine-axe';
+      beforeEach(() => jasmine.addMatchers(toHaveNoViolations));
+
+      describe('ComponentName Accessibility', () => {
+        it('should have no accessibility violations', async () => {
+          const fixture = TestBed.createComponent(ComponentName);
+          fixture.detectChanges();
+          const results = await axe(fixture.nativeElement);
+          expect(results).toHaveNoViolations();
+        });
+
+        it('should have no violations in error state', async () => {
+          const fixture = TestBed.createComponent(ComponentName);
+          fixture.componentInstance.hasError = true;
+          fixture.detectChanges();
+          const results = await axe(fixture.nativeElement);
+          expect(results).toHaveNoViolations();
+        });
+      });
+
+# ─── AT Simulation Test Procedures ───────────────────────────────────────
+# Manual verification procedures for common Angular component patterns.
+
+at_simulation:
+  description: >
+    Manual AT (assistive technology) test procedures for components
+    that require screen reader or keyboard verification beyond static analysis.
+
+  test_matrix:
+    - component: Data Table (mat-table)
+      at: JAWS + Chrome
+      steps:
+        - Navigate to table with screen reader
+        - Verify table role and accessible name announced
+        - Navigate between cells — verify column headers announced
+        - Verify sort state announced (aria-sort) when column is sortable
+        - Verify row count announced
+
+    - component: Dialog (mat-dialog)
+      at: Keyboard + NVDA
+      steps:
+        - Open dialog via keyboard (Enter on trigger button)
+        - Verify role="dialog" and aria-label announced
+        - Verify focus trapped within dialog
+        - Press Escape — verify dialog closes
+        - Verify focus returns to trigger element
+
+    - component: Form with Validation
+      at: JAWS + Chrome
+      steps:
+        - Tab to each form field — verify label announced
+        - Submit with empty required fields
+        - Verify error messages announced via aria-live or role="alert"
+        - Verify aria-invalid="true" set on invalid fields
+        - Verify aria-describedby links error message to field
+
+    - component: Autocomplete / Combobox (mat-autocomplete)
+      at: VoiceOver + Safari
+      steps:
+        - Focus input — verify combobox role announced
+        - Type text — verify suggestions panel opens
+        - Arrow through options — verify each option announced
+        - Select option — verify selection announced
+        - Verify aria-expanded toggles correctly
+
+    - component: Snackbar / Toast (mat-snack-bar)
+      at: NVDA + Firefox
+      steps:
+        - Trigger snackbar action
+        - Verify announcement occurs (role="status" or aria-live)
+        - Verify politeness level is appropriate (polite for info, assertive for errors)
+        - If action button present, verify it's keyboard accessible
+
+    - component: Tab Group (mat-tab-group)
+      at: Keyboard + JAWS
+      steps:
+        - Tab to tab list — verify tablist role announced
+        - Arrow between tabs — verify tab label and selected state announced
+        - Verify only selected tab panel is in tab order
+        - Verify aria-selected updates on tab change
