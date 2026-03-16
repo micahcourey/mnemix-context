@@ -5,6 +5,13 @@ All notable changes to Mnemix Context will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-03-15
+
+### Fixed
+- Generated updater docs now assume `mnemix-context` is cloned temporarily for upgrades instead of requiring a long-lived toolkit checkout inside the target repo.
+- Generated Mnemix skill docs now describe Mnemix as an external package rather than implying the toolkit repo must remain present.
+- Generated endpoint extraction help text now excludes `.ai` and `.worktrees` by default instead of mentioning a repo-local `mnemix-context` directory.
+
 ## [0.3.0] - 2026-03-15
 
 ### Added
