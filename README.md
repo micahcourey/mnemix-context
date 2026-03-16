@@ -14,8 +14,8 @@ You describe your project once in a YAML config. The toolkit renders a full set 
 
 The toolkit uses a **3-level progressive disclosure** pattern to minimize token waste:
 
-| Level       | Always Loaded? | What | Purpose |
-|-------------|----------------|------|---------|
+| Level          | Always Loaded? | What | Purpose |
+|----------------|----------------|------|---------|
 | **L1 — Router** | Yes (~60 lines) | `AGENTS.md` | Routes agents to the right instructions and context files |
 | **L2 — Instructions** | On demand | `instructions/*.md` | Coding standards, security patterns, git workflow, naming |
 | **L3 — Context** | On demand | `context/*.md` + `.jsonl` / `.yaml` | Deep project knowledge: architecture, schema, roles, APIs |
