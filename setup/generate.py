@@ -1568,7 +1568,7 @@ def main():
         print()
         print("Next steps:")
         print("  1. Drop project docs (DB extracts, API specs, glossaries) into mnemix-context/reference/")
-        print("  2. Run the Bootstrap Agent to auto-populate context files")
+        print("  2. Use the bootstrap workflow to populate context files")
         print("  3. Review generated files in .ai/")
         print("  4. Copy .ai/ to your workspace root")
         print("  5. Run: bash .ai/setup-links.sh")

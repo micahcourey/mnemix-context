@@ -10,31 +10,26 @@ Every AI coding tool performs better when it understands your project: the tech 
 
 You describe your project once in a YAML config. The toolkit renders a full set of **agents, skills, context files, and platform adapters** that your AI tools pick up automatically — no copy-pasting system prompts, no repeating yourself across tools.
 
-### Progressive Disclosure Architecture
+Mnemix Context is a companion project to [Mnemix](https://github.com/micahcourey/mnemix), and both are part of the broader Mnemix agent-context ecosystem. You can use `mnemix-context` entirely on its own, or pair it with Mnemix when you want a fuller memory layer across sessions. For more on the memory layer itself, see the [Mnemix project](https://github.com/micahcourey/mnemix).
+
+### Progressive Disclosure + Optional Memory
 
 The toolkit uses a **3-level progressive disclosure** pattern to minimize token waste:
 
-| Level          | Always Loaded? | What | Purpose |
-|----------------|----------------|------|---------|
-| **L1 — Router** | Yes (~60 lines) | `AGENTS.md` | Routes agents to the right instructions and context files |
-| **L2 — Instructions** | On demand | `instructions/*.md` | Coding standards, security patterns, git workflow, naming |
-| **L3 — Context** | On demand | `context/*.md` + `.jsonl` / `.yaml` | Deep project knowledge: architecture, schema, roles, APIs |
-
-Agents start with L1, load L2 modules relevant to their task, and dip into L3 only when they need specific data — keeping token budgets tight.
-
-### Mnemix Add-On (Optional)
-
-The vertical L1–L3 layers define **static ground truth** — the rules of the project. **Mnemix** is an optional external add-on that provides **read/write episodic memory** across sessions.
+The vertical L1–L3 layers define the project's **static ground truth**. Agents start thin, loading only the level they need for the current task. **Mnemix** is an optional add-on that adds read/write episodic memory across sessions without changing the core layering model.
 
 ```
-                    L1 AGENTS.md (Router)
-                         │
-                    L2 instructions/*.md (Rules)
-                         │
-                    L3 context/*.md + .jsonl (Knowledge)
-                         │
-═════════════════════════╪═══════════════════════════════  ← Mnemix
-past ── session N-2 ── session N-1 ── session N ── now      (episodic memory)
+             L1  AGENTS.md                    always loaded
+                 lightweight router
+                        │
+             L2  instructions/*.md            loaded on demand
+                 standards, security, git, naming
+                        │
+             L3  context/*.md + .jsonl        loaded only when needed
+                 architecture, schema, APIs, glossary
+                        │
+════════════════════════╪════════════════════════════════  optional Mnemix
+ session N-2 ── session N-1 ── session N ── now           episodic memory
 ```
 
 Enable it with `features.integrations.mnemix: true`, install the official package with `pip install mnemix`, and initialize a store with `mnemix --store .mnemix init`.
@@ -93,7 +88,7 @@ flowchart LR
 
 | Layer | What it gives you | Footprint |
 |-------|-------------------|-----------|
-| **Agents** | 4 focused roles with clear boundaries | Engineer, Reviewer, Documentation, Architect |
+| **Agents** | 4 focused roles with clear boundaries | Architect, Engineer, Reviewer, Documentation |
 | **Skills** | Auto-activating task playbooks | 12 core skills + optional Mnemix memory |
 | **Context** | Structured project knowledge in `.ai/context/` | 10 prose files + 6 structured data files |
 | **Platform Output** | Native configs and adapters for your chosen tools | Copilot, OpenCode, Codex, Cursor, Claude, Cline, Windsurf |
@@ -162,33 +157,38 @@ The bootstrap agent reads these first and uses them as primary sources when popu
 
 For more information on supported formats and examples, see [reference/README.md](reference/README.md).
 
-### Step 4: Copy the Bootstrap Agent to Your Project
+### Step 4: Start the Bootstrap Workflow
 
-Navigate to the root of your project, then run:
+Choose the setup path that matches your tool:
+
+**GitHub Copilot**
+
+1. Copy the bootstrap agent into your project:
 
 ```bash
 mkdir -p .github/agents
 cp mnemix-context/setup/bootstrap.agent.md .github/agents/mnemix-context-bootstrap.agent.md
 ```
 
-Then reload VS Code so it picks up the new agent:
+2. Reload VS Code:
 
 > **Cmd+Shift+P** → `Developer: Reload Window`
 
-This places the setup agent where Copilot can find it. The rest of Mnemix Context stays in its own repo — only this one file gets copied.
+3. Open **Copilot Chat**, choose **Toolkit Bootstrap**, and send:
 
-### Other Setup Paths
+```text
+Set up Mnemix Context for this project
+```
 
-If you are not using GitHub Copilot for setup:
+**Other tools**
 
-- Use [setup/SETUP.md](/Users/micah/Projects/mnemix-context/setup/SETUP.md) as the tool-neutral setup workflow for Codex, OpenCode, Cursor, Claude Code, Cline, or Windsurf
-- After generation, native `setup` agents are available for Copilot, OpenCode, and Codex in the generated `.ai/` output
+1. Open your coding assistant in the project root
+2. Open [setup/SETUP.md](/Users/micah/Projects/mnemix-context/setup/SETUP.md) or paste its workflow into the conversation
+3. Send:
 
-### Step 5: Run the Bootstrap Agent (Recommended)
-
-1. Open **Copilot Chat** in VS Code
-2. Click the **chat mode dropdown** (bottom left of the chat panel) and select **Toolkit Bootstrap**
-3. Send the message: **"Set up Mnemix Context for this project"**
+```text
+Use setup/SETUP.md and bootstrap Mnemix Context for this repository. Scan the project, ask for any missing facts, and generate the .ai output.
+```
 
 The agent walks you through the entire setup interactively:
 
@@ -202,7 +202,7 @@ The agent walks you through the entire setup interactively:
 
 When it finishes, your project has fully customized AI resources in `.ai/` ready to use.
 
-### Step 6: Copy to Your Workspace and Create Symlinks
+### Step 5: Copy to Your Workspace and Create Symlinks
 
 ```bash
 # Copy the generated .ai/ directory to your workspace root
@@ -217,9 +217,9 @@ Commit the `.ai/` directory and symlinks to your repo.
 
 ---
 
-## Manual Setup (Alternative)
+## Manual Setup (Fallback / Advanced)
 
-If you prefer to configure manually or can't use the bootstrap agent:
+Use this path only if you cannot use the bootstrap workflow or prefer to configure everything by hand.
 
 ### 1. Copy and Edit the Config
 
@@ -236,41 +236,6 @@ Open `toolkit.config.yaml` and fill in your project details. Key sections:
 project:
   name: "My Project"
   description: "What this project does"
-  jira_key: "PROJ"
-  org_name: "My Organization"
-  task_tracking_system: "Jira"
-  task_tracking_notes: "Issues are planned in Jira and linked in PR titles"
-
-platforms:
-  # Universal open standards (recommended: keep all true)
-  agents_md: true           # AGENTS.md — canonical instructions
-  skills: true              # .ai/skills/ — auto-activating skills
-  context_files: true       # .ai/context/ — project knowledge base
-
-  # Platform-specific adapters (enable the ones your team uses)
-  copilot: true             # GitHub Copilot
-  opencode: false           # OpenCode
-  codex: false              # Codex CLI
-  cursor: false             # Cursor
-  claude: false             # Claude Code
-  cline: false              # Cline
-  windsurf: false           # Windsurf
-
-tech_stack:
-  frontend:
-    framework: "Angular 18"
-    language: "TypeScript 5.x"
-  backend:
-    runtime: "Node.js 20"
-    framework: "Express"
-  databases:
-    - name: "Aurora PostgreSQL"
-      type: "relational"
-  cloud:
-    provider: "AWS"
-  auth:
-    provider: "Okta SSO"
-    strategy: "JWT + RBAC"
 ```
 
 See the full schema with all options in [toolkit.config.yaml](toolkit.config.yaml).
@@ -310,27 +275,24 @@ The more complete these are, the better your AI tools will understand your proje
 
 ## Keeping Context Files Up to Date
 
-Projects evolve — schemas change, endpoints get added, roles are modified. The toolkit includes a **Context Updater** agent that refreshes your `.ai/context/` files without re-running the full bootstrap.
-
-### Who Runs Updates
-
-Context updates are typically performed by the **Tech Lead or Architect**, not every developer. The updater agent lives in `.ai/update/` and is only copied into the agents directory when needed — keeping the everyday agent dropdown clean.
+Projects evolve — schemas change, endpoints get added, roles are modified. The toolkit includes a **Context Updater** workflow that refreshes your `.ai/context/` files without re-running the full bootstrap.
 
 ### Quick Start
 
 ```bash
-# 1. Copy the update agent (only when you need to run an update)
+# 1. Optional: copy the update agent if you're using Copilot
 cp .ai/update/update.agent.md .github/agents/context-updater.agent.md
 
 # 2. Reload VS Code (Cmd+Shift+P → Developer: Reload Window)
 
-# 3. Open Copilot Chat → select Context Updater → "Update context files"
+# 3. Copilot: open Context Updater and say "Update context files"
+#    Other tools: open .ai/update/UPDATE.md and use its starter prompt
 
 # 4. After reviewing and committing updates, clean up
 rm .github/agents/context-updater.agent.md
 ```
 
-The agent scans the codebase, presents a detailed change report, and only applies changes you approve. Structured data files (`.jsonl`, `.yaml`) are updated directly; prose files (`.md`) are never overwritten without your explicit approval.
+The updater scans the codebase, presents a detailed change report, and only applies changes you approve. Structured data files (`.jsonl`, `.yaml`) are updated directly; prose files (`.md`) are never overwritten without your explicit approval.
 
 For full details, see [.ai/update/README.md](.ai/update/README.md) after generating your project files.
 
@@ -402,33 +364,30 @@ your-project/
 │   │   └── role_permissions.jsonl
 │   ├── update/                          # Context update module
 │   │   ├── update.agent.md              #   Updater agent (copy to agents/ when needed)
+│   │   ├── UPDATE.md                    #   Tool-neutral update workflow
 │   │   └── README.md                    #   Update workflow documentation
 │   ├── copilot-instructions.md          # Copilot config (references AGENTS.md)
-│   ├── SETUP.md                         # Tool-neutral setup workflow
-│   ├── agents/                          # 5 Copilot agent personas
+│   ├── agents/                          # 4 Copilot agent personas
 │   │   ├── engineer.agent.md
 │   │   ├── reviewer.agent.md
 │   │   ├── documentation.agent.md
 │   │   ├── architect.agent.md
-│   │   ├── setup.agent.md
 │   ├── skills/                          # 12 auto-activating skills
 │   │   └── */SKILL.md
 │   ├── opencode/                        # OpenCode native integration
 │   │   ├── opencode.json                #   OpenCode project config
-│   │   └── agents/                      #   5 OpenCode agent definitions
+│   │   └── agents/                      #   4 OpenCode agent definitions
 │   │       ├── engineer.md
 │   │       ├── reviewer.md
 │   │       ├── documentation.md
 │   │       ├── architect.md
-│   │       ├── setup.md
 │   ├── codex/                           # Codex CLI native integration
 │   │   ├── config.toml                  #   Codex project config
-│   │   └── agents/                      #   5 Codex agent role configs
+│   │   └── agents/                      #   4 Codex agent role configs
 │   │       ├── engineer.toml
 │   │       ├── reviewer.toml
 │   │       ├── documentation.toml
 │   │       ├── architect.toml
-│   │       ├── setup.toml
 │   ├── CLAUDE.md                        # Claude Code adapter
 │   ├── cursor-rules.mdc                # Cursor adapter
 │   ├── clinerules                       # Cline adapter
@@ -478,7 +437,6 @@ mnemix-context/
 ├── templates/
 │   ├── universal/                   # Open standards (all platforms)
 │   │   ├── AGENTS.md.tmpl           # L1 Router template
-│   │   ├── SETUP.md.tmpl            # Tool-neutral generated setup workflow
 │   │   ├── instructions/            # L2 Instruction module templates
 │   │   │   ├── security-patterns.md.tmpl
 │   │   │   ├── coding-standards.md.tmpl
@@ -491,13 +449,13 @@ mnemix-context/
 │   │   └── skills/*/SKILL.md.tmpl   # 12 skill templates
 │   ├── copilot/                     # GitHub Copilot specific
 │   │   ├── copilot-instructions.md.tmpl
-│   │   ├── agents/*.agent.md.tmpl   # 5 wrapper templates (frontmatter + include)
+│   │   ├── agents/*.agent.md.tmpl   # 4 wrapper templates (frontmatter + include)
 │   ├── opencode/                    # OpenCode native integration
 │   │   ├── opencode.json.tmpl       #   Project config (model, agents.path, etc.)
-│   │   └── agents/*.md.tmpl         # 5 agent wrapper templates
+│   │   └── agents/*.md.tmpl         # 4 agent wrapper templates
 │   ├── codex/                       # Codex CLI native integration
 │   │   ├── config.toml.tmpl         #   Project config (approval_policy, sandbox_mode)
-│   │   └── agents/*.toml.tmpl       # 5 agent role config templates
+│   │   └── agents/*.toml.tmpl       # 4 agent role config templates
 │   ├── shared/                      # Canonical reusable content
 │   │   └── personas/*.md.tmpl       # 4 persona content templates
 │   └── adapters/                    # Platform adapter pointers

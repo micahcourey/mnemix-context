@@ -17,7 +17,7 @@ Run this agent when:
 - Roles or permissions have been modified
 - Major directories or entry points have changed
 - Framework or dependency versions have been upgraded
-- The team suspects context files are stale
+- The generated context appears stale
 
 ## Your Approach
 
@@ -303,8 +303,8 @@ Deferred: [N] suggestions saved for next update
 Next steps:
   1. Review the updated files in .ai/context/
   2. Commit the changes: git add .ai/ && git commit -m "chore: update AI context files"
-  3. Create a PR for team review
-  4. After merge, remove the update agent: rm .github/agents/context-updater.agent.md
+  3. Open a PR for the updated .ai/ output if appropriate for your workflow
+  4. If you copied the update agent into .github/agents/, remove it when you're done: rm .github/agents/context-updater.agent.md
 ```
 
 ---

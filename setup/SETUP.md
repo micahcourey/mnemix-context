@@ -107,7 +107,6 @@ Check that generation produced:
 - `.ai/instructions/`
 - `.ai/context/`
 - `.ai/skills/`
-- `.ai/SETUP.md`
 - platform-specific native/adapter files for the enabled tools
 
 ### 7. Final handoff
@@ -119,3 +118,11 @@ Summarize:
 - which platforms were enabled
 - any sections of `toolkit.config.yaml` that still need refinement
 - any context files that still need project-specific content
+
+Then guide the user through completion:
+
+- recommend creating a PR for the generated `.ai/` output
+- recommend committing `.ai/` and the platform symlinks together
+- offer to clean up the temporary `mnemix-context` workspace clone if it is no longer needed
+
+Do not treat generation as the end of the workflow. Close by asking whether the user wants help with PR prep and workspace cleanup.
