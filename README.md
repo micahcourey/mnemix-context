@@ -238,6 +238,8 @@ project:
   description: "What this project does"
   jira_key: "PROJ"
   org_name: "My Organization"
+  task_tracking_system: "Jira"
+  task_tracking_notes: "Issues are planned in Jira and linked in PR titles"
 
 platforms:
   # Universal open standards (recommended: keep all true)
@@ -591,4 +593,3 @@ Changes to docs, examples, CI workflows, and the config template don't require a
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
