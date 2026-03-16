@@ -98,6 +98,7 @@ Ask about:
 ### Round 4: Conventions
 Ask about:
 - **Branch naming** — "What's your branch naming pattern? (e.g., JIRA-1234, feature/name)"
+- **Task tracking** — "What task tracking system does this project use? (e.g., Jira, GitHub Issues, Linear, Dex, none)"
 - **Commit format** — "Do you follow conventional commits? What format?"
 - **Coverage target** — "What's your minimum test coverage target?"
 - **Naming conventions** — "Any specific naming patterns for folders, components, or services?"
@@ -162,6 +163,8 @@ project:
   description: [provided]
   jira_key: [provided]
   org_name: [provided]
+  task_tracking_system: [provided]
+  task_tracking_notes: [provided/optional]
 
 platforms:
   agents_md: true

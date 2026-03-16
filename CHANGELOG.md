@@ -5,6 +5,18 @@ All notable changes to Mnemix Context will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-03-15
+
+### Added
+- Vendored Mnemix coding-agent adapter templates under generated `.ai/mnemix/adapters/`.
+- Generated `.ai/mnemix/MEMORY_POLICY.md` with durable-memory recording and recall guidance.
+- Generic project task-tracking metadata in `toolkit.config.yaml` plus bootstrap interview prompts for capturing the team's tracker and workflow notes.
+
+### Changed
+- Generated `AGENTS.md` now places mandatory Mnemix session protocol directly below the project overview.
+- Generated Mnemix docs and setup guidance now point to the vendored adapter and policy files instead of only referencing an upstream adapter path.
+- Generated Git workflow instructions can surface project-specific task-tracking workflow notes without hardcoding any one tracking system.
+
 ## [0.2.0] - 2026-03-15
 
 ### Added

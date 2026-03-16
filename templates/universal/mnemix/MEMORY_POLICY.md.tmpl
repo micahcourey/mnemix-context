@@ -1,0 +1,107 @@
+# Mnemix Memory Policy
+
+Use Mnemix to preserve durable project knowledge that should survive the current chat session.
+
+## Mandatory Session Flow
+
+When Mnemix is enabled for a project:
+
+1. Recall before planning, coding, review, or documentation work
+2. Search for specific prior knowledge when recall is too broad
+3. Create a checkpoint before risky edits or destructive operations
+4. Record durable outcomes before ending substantive work
+
+## What To Recall
+
+At task start, look for:
+
+- prior architectural or implementation decisions
+- known pitfalls or regressions
+- verified facts that were expensive to discover
+- repeatable procedures for setup, debugging, release, or migration
+- previous partial work that should be continued instead of repeated
+
+## What To Record
+
+Store only durable information with future retrieval value.
+
+### `decision`
+
+Record when:
+
+- a design or implementation path was chosen
+- a tradeoff was evaluated and one approach won
+- a naming, schema, API, workflow, or testing convention was settled
+
+### `fact`
+
+Record when:
+
+- you verified a non-obvious truth in the codebase or infrastructure
+- you confirmed where important logic lives
+- you confirmed a dependency, entry point, limit, or operational constraint
+
+### `procedure`
+
+Record when:
+
+- you found a reliable sequence to build, debug, recover, release, or migrate
+- the steps are likely to be reused by later sessions
+
+### `warning`
+
+Record when:
+
+- a trap caused wasted time
+- a bad pattern, regression vector, or sharp edge was identified
+- an area needs extra caution before future edits
+
+### `summary`
+
+Record when:
+
+- a meaningful unit of work finished
+- future sessions would benefit from a concise handoff
+
+## What Not To Record
+
+Do not store:
+
+- secrets, credentials, or tokens
+- personal or regulated user data
+- raw chat transcripts or noisy logs
+- speculative claims you have not verified
+- trivial edits with no reuse value
+
+## Quality Bar
+
+Every memory should be:
+
+- searchable by title and summary
+- scoped correctly to the repo, workspace, or task namespace
+- specific enough to reuse later
+- concise enough to skim quickly
+
+## Recommended Fields
+
+- `id`: stable and descriptive
+- `scope`: repo or workspace namespace
+- `kind`: `decision`, `fact`, `procedure`, `warning`, or `summary`
+- `title`: short and searchable
+- `summary`: one-sentence takeaway
+- `detail`: enough context to reuse the memory
+- `importance`: higher for architectural, risky, or repeat-use memories
+- `tags`: subsystem, work type, and memory kind
+
+## Good Tags
+
+- `decision`
+- `fact`
+- `procedure`
+- `warning`
+- `summary`
+- `coding`
+- `review`
+- `docs`
+- `migration`
+- component or subsystem names

@@ -12,6 +12,8 @@ project:
   org_name: "DataCo"
   repo_url: "github.com/dataco/data-platform"
   jira_key: "DATA"
+  task_tracking_system: "Linear"
+  task_tracking_notes: "Linear is the source of truth for feature and bug work"
 
 tech_stack:
   frontend:
