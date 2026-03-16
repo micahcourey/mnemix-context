@@ -88,7 +88,7 @@ This helps the agent know what changed between updates.
 
 ## Toolkit Upgrades
 
-When the `mnemix-context` repository receives new templates (improved agents, new skills, updated instructions), you can pull those changes into your project without losing customizations.
+When the `mnemix-context` toolkit receives new templates (improved agents, new skills, updated instructions), you can re-run an upgrade without losing customizations. You do not need to keep a toolkit checkout inside the target repo; clone it temporarily when you want to upgrade.
 
 ### How It Works
 
@@ -111,21 +111,22 @@ When you run `--upgrade`, the tool compares the manifest against current templat
 ### Upgrade Workflow
 
 ```bash
-# 1. Pull latest toolkit
-cd mnemix-context && git pull
+# 1. Clone or update the toolkit in a temporary location
+git clone https://github.com/micahcourey/mnemix-context.git /tmp/mnemix-context
+# or: git -C /tmp/mnemix-context pull
 
 # 2. Preview what would change
-python3 mnemix-context/setup/generate.py --upgrade --dry-run
+python3 /tmp/mnemix-context/setup/generate.py --upgrade --dry-run
 
 # 3. Apply upgrades interactively
-python3 mnemix-context/setup/generate.py --upgrade
+python3 /tmp/mnemix-context/setup/generate.py --upgrade
 
 # 4. Non-interactive (CI-friendly: auto-accept safe, skip conflicts)
-python3 mnemix-context/setup/generate.py --upgrade --non-interactive
+python3 /tmp/mnemix-context/setup/generate.py --upgrade --non-interactive
 
 # 5. Review and commit
 git add .ai/
-git commit -m "chore: upgrade mnemix-context to vX.Y.Z"
+git commit -m "chore: upgrade AI context toolkit to vX.Y.Z"
 ```
 
 ### Via the Context Updater Agent
