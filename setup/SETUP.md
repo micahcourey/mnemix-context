@@ -66,6 +66,7 @@ If the user provided pre-existing `AGENTS.md`, `CLAUDE.md`, Copilot instructions
 If anything is unclear, ask targeted questions about:
 
 - project description and organization name
+- task tracking system and any workflow notes
 - branch naming and commit style
 - coverage target
 - key domain entities and roles

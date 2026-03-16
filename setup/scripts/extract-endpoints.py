@@ -17,7 +17,7 @@ Usage:
     # Exclude specific repos
     python3 setup/scripts/extract-endpoints.py /path/to/workspace \
         --output .ai/context/endpoints.jsonl \
-        --exclude mnemix-context,node_modules
+        --exclude .ai,node_modules,.worktrees
 
     # Only scan specific repos (comma-separated)
     python3 setup/scripts/extract-endpoints.py /path/to/workspace \
@@ -463,7 +463,7 @@ def main() -> None:
 Examples:
   %(prog)s /path/to/workspace
   %(prog)s /path/to/workspace --output .ai/context/endpoints.jsonl
-  %(prog)s /path/to/workspace --exclude mnemix-context,documentation
+  %(prog)s /path/to/workspace --exclude .ai,documentation
   %(prog)s /path/to/workspace --only agreement-management-api,idm-api
         """,
     )

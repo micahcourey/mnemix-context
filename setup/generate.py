@@ -256,6 +256,8 @@ def build_context(config: Dict[str, Any]) -> Dict[str, str]:
     context["project.org_name"] = get_nested(config, "project.org_name")
     context["project.repo_url"] = get_nested(config, "project.repo_url")
     context["project.jira_key"] = get_nested(config, "project.jira_key")
+    context["project.task_tracking_system"] = get_nested(config, "project.task_tracking_system")
+    context["project.task_tracking_notes"] = get_nested(config, "project.task_tracking_notes")
 
     # --- Tech Stack ---
     context["tech.frontend.framework"] = get_nested(config, "tech_stack.frontend.framework")

@@ -26,6 +26,8 @@ project:
   org_name: ""                      # e.g., "Acme", "Personal", "Open Source"
   repo_url: ""                      # e.g., "github.com/tria/my-project"
   jira_key: ""                      # e.g., "IDDOC", "SUPPLY", "FIN"
+  task_tracking_system: ""          # e.g., "Jira", "GitHub Issues", "Linear", "Dex", "None"
+  task_tracking_notes: ""           # Optional workflow note, conventions, or sync details
 
 # --------------------------------------------------------------------------
 # Technology Stack

@@ -1,14 +1,14 @@
 ---
 name: mnemix-memory
-description: Optional long-term memory integration using the external Mnemix CLI and coding agent adapter.
+description: Cross-session memory integration using the external Mnemix CLI and the vendored coding agent adapter.
 ---
 
 # Mnemix Memory
 
 ## Overview
 
-This project can use **Mnemix** as an optional add-on for long-term agent memory.
-Mnemix is external to `mnemix-context`: install it separately, initialize a local store, and use it to recall prior project context and persist durable memories between sessions.
+This project uses **Mnemix** for cross-session agent memory when the integration is enabled.
+Mnemix is an external package: install it separately, initialize a local store, and use it with the generated policy and adapter files to recall prior project context and persist durable memories between sessions.
 
 Store location: `{{mnemix.store_path}}`
 Scope: `{{mnemix.scope}}`
@@ -28,11 +28,11 @@ Initialize the store:
 {{mnemix.binary}} --store {{mnemix.store_path}} init
 ```
 
-For Python-based coding workflows, prefer the official coding adapter:
+For Python-based coding workflows, prefer the vendored coding adapter:
 
-- Repo: [micahcourey/mnemix](https://github.com/micahcourey/mnemix)
-- Adapter: `adapters/coding_agent_adapter.py`
-- Docs: [docs.mnemix.org/guide](https://docs.mnemix.org/guide/)
+- Adapter package: `mnemix/adapters/`
+- Entry point: `mnemix/adapters/coding_agent_adapter.py`
+- Policy: `mnemix/MEMORY_POLICY.md`
 
 Use the adapter when you want your coding agent runtime to:
 
@@ -104,6 +104,8 @@ Use checkpoints before:
 ```
 
 Write memory only when the information will help a future session.
+
+When Mnemix is enabled for the project, this step is mandatory for substantive work.
 
 ## Recall Rules
 
@@ -199,7 +201,7 @@ Good tags:
 
 ## Adapter Guidance
 
-If your coding environment supports Python-based agent hooks, integrate the official `coding_agent_adapter.py` instead of hand-rolling memory calls.
+If your coding environment supports Python-based agent hooks, integrate the vendored `coding_agent_adapter.py` instead of hand-rolling memory calls.
 
 Use the adapter to:
 

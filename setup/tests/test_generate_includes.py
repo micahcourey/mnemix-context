@@ -6,7 +6,13 @@ import unittest
 # Allow importing from parent setup/ directory
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from generate import _process_includes, _resolve_include_path, should_process_template, resolve_output_path
+from generate import (
+    _process_includes,
+    _resolve_include_path,
+    build_context,
+    resolve_output_path,
+    should_process_template,
+)
 
 
 class TestTemplateIncludes(unittest.TestCase):
@@ -326,6 +332,48 @@ class TestMnemixTemplateProcessing(unittest.TestCase):
             config,
         )
         self.assertTrue(result)
+
+    def test_mnemix_adapter_processed_when_enabled(self) -> None:
+        config = self._base_config(mnemix=True)
+        result = should_process_template(
+            "universal/mnemix/adapters/coding_agent_adapter.py",
+            {"copilot"},
+            config,
+        )
+        self.assertTrue(result)
+
+    def test_mnemix_policy_processed_when_enabled(self) -> None:
+        config = self._base_config(mnemix=True)
+        result = should_process_template(
+            "universal/mnemix/MEMORY_POLICY.md",
+            {"copilot"},
+            config,
+        )
+        self.assertTrue(result)
+
+
+class TestBuildContext(unittest.TestCase):
+    def test_build_context_includes_task_tracking_fields(self) -> None:
+        config = {
+            "project": {
+                "name": "example",
+                "description": "Example project",
+                "task_tracking_system": "Linear",
+                "task_tracking_notes": "Bugs are triaged in Linear and mirrored to Slack.",
+            },
+            "tech_stack": {
+                "frontend": {"framework": "React"},
+                "backend": {"framework": "Fastify"},
+            },
+        }
+
+        context = build_context(config)
+
+        self.assertEqual(context["project.task_tracking_system"], "Linear")
+        self.assertEqual(
+            context["project.task_tracking_notes"],
+            "Bugs are triaged in Linear and mirrored to Slack.",
+        )
 
 
 class TestEvalsTemplateProcessing(unittest.TestCase):

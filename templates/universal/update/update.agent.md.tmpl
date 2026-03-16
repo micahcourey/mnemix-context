@@ -21,7 +21,7 @@ Run this agent when:
 
 ## Your Approach
 
-0. **Toolkit Upgrade** (optional) — Check if `mnemix-context` has newer templates and offer to upgrade
+0. **Toolkit Upgrade** (optional) — Check whether a temporary `mnemix-context` checkout is available and offer a template upgrade if the user wants one
 1. **Read Current State** — Load existing context files and `.ai/update/.last-updated` metadata
 2. **Re-Scan Codebase** — Same detection techniques as the bootstrap agent
 3. **Diff & Report** — Compare current context files against fresh scan results
@@ -47,14 +47,14 @@ Run `python3 .ai/update/scripts/<script>.py --help` for full usage.
 Before checking for project data drift, check if the toolkit itself has updates.
 
 1. Read `.ai/update/.toolkit-manifest.json` for the current toolkit version
-2. Check if `mnemix-context/VERSION` (the toolkit's version file) is newer than the manifest version
+2. If the user wants a toolkit upgrade and a toolkit checkout is available, compare its `VERSION` file against the manifest version
 3. If newer:
-   - Run `python3 mnemix-context/setup/generate.py --upgrade --dry-run` to preview changes
+   - Run `python3 /path/to/mnemix-context/setup/generate.py --upgrade --dry-run` to preview changes
    - Present the change report to the user
    - For conflicts, show the diff and explain what changed on each side
-   - If approved, run `python3 mnemix-context/setup/generate.py --upgrade`
+   - If approved, run `python3 /path/to/mnemix-context/setup/generate.py --upgrade`
    - Updated files will include new/improved agents, skills, instructions, and scripts
-4. If same version: skip to Phase 1 (context update)
+4. If no toolkit checkout is available or versions match: skip to Phase 1 (context update)
 
 Present:
 ```
@@ -107,7 +107,7 @@ Build a fresh `schema.yaml` snapshot in memory.
 Use the helper script to re-scan route files:
 ```bash
 python3 .ai/update/scripts/extract-endpoints.py /path/to/workspace \
-  --output .ai/context/endpoints.jsonl --exclude mnemix-context
+  --output .ai/context/endpoints.jsonl --exclude .ai,node_modules,.worktrees
 ```
 Build a fresh `endpoints.jsonl` snapshot in memory.
 

@@ -32,6 +32,16 @@ Closes {{conventions.branch_pattern}}
 - Ensure CI passes before requesting review
 - Squash commits on merge
 
+{{#if project.task_tracking_system}}
+## Task Tracking
+
+- Primary system: `{{project.task_tracking_system}}`
+{{#if project.task_tracking_notes}}
+- Workflow note: {{project.task_tracking_notes}}
+{{/if}}
+- Keep implementation work aligned with the project's task tracking workflow before and after code changes
+{{/if}}
+
 ## Default Branch
 
 - **Main branch**: `{{conventions.default_branch}}`
