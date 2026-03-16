@@ -27,6 +27,40 @@ Inspect the repository to infer:
 - branch/test conventions
 - important entry points and scripts
 
+Also inspect any existing AI-assistant inputs already present in the repository, including:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- Copilot instructions files
+- Cursor/Cline/Windsurf rules files
+- existing skill directories or `SKILL.md` files
+- any other agent or assistant instruction files
+
+Treat these as migration inputs, not noise.
+
+### 1a. Review provided references thoroughly
+
+If the user placed files in `reference/` or another setup input folder, read them thoroughly before generating output.
+
+Make sure all relevant guidance is captured, especially:
+
+- architecture and integration details
+- auth and access-control rules
+- domain terminology
+- API and schema information
+- operational or workflow constraints
+- existing agent instructions and skills
+
+### 1b. Detect existing agent instructions and skills
+
+If you find pre-existing agent instruction files or skills during the scan:
+
+1. summarize what was found
+2. ask the user whether they want those materials incorporated into the generated `.ai/` output
+3. if they say yes, merge the relevant guidance into the generated instructions, agents, or skills
+
+If the user provided pre-existing `AGENTS.md`, `CLAUDE.md`, Copilot instructions, or skill files in `reference/`, ask whether they should be treated as authoritative inputs for the generated `.ai/` output.
+
 ### 2. Ask only for missing facts
 
 If anything is unclear, ask targeted questions about:
@@ -38,6 +72,11 @@ If anything is unclear, ask targeted questions about:
 - sensitive data handled
 - optional compliance requirements
 - data isolation strategy
+
+Also ask, when applicable:
+
+- whether discovered pre-existing agent instructions should be incorporated into `.ai/`
+- whether discovered pre-existing skills should be migrated or merged into `.ai/skills/`
 
 ### 3. Configure platforms
 

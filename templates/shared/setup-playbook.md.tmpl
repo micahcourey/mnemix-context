@@ -18,6 +18,42 @@ Inspect the repository to infer:
 - testing frameworks
 - important entry points, scripts, and directories
 
+Also inspect any existing AI-assistant inputs already present in the repository, including:
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- Copilot instructions files
+- Cursor/Cline/Windsurf rules files
+- existing skill directories or `SKILL.md` files
+- any other agent or assistant instruction files
+
+Treat these as migration inputs, not noise.
+
+### 1a. Review provided references thoroughly
+
+If the user placed files in `reference/` or another setup input folder, read them thoroughly before generating output.
+
+Your goal is to make sure all relevant project guidance is captured, especially:
+
+- architecture and integration details
+- auth and access-control rules
+- domain terminology
+- API and schema information
+- operational or workflow constraints
+- existing agent instructions and skills
+
+Do not skim if the files are likely to contain project rules that should flow into `.ai/`.
+
+### 1b. Detect existing agent instructions and skills
+
+If you find pre-existing agent instruction files or skills in the project during the scan:
+
+1. summarize what was found
+2. ask the user whether they want those materials incorporated into the generated `.ai/` output
+3. if they say yes, merge the relevant guidance into the generated instructions, agents, or skills rather than ignoring it
+
+If the user provided pre-existing `AGENTS.md`, `CLAUDE.md`, Copilot instructions, or skill files in `reference/`, ask whether they should be treated as authoritative inputs for the generated `.ai/` output.
+
 ### 2. Ask targeted follow-up questions
 
 Only ask for details that cannot be detected reliably from the repo, especially:
@@ -29,6 +65,11 @@ Only ask for details that cannot be detected reliably from the repo, especially:
 - sensitive data and optional compliance requirements
 - data isolation strategy
 - which AI platforms should be enabled
+
+Also ask, when applicable:
+
+- whether discovered pre-existing agent instructions should be incorporated into `.ai/`
+- whether discovered pre-existing skills should be migrated or merged into `.ai/skills/`
 
 ### 3. Update configuration
 
