@@ -24,6 +24,56 @@ If you want a Python-based workflow helper for coding agents, see the official c
 - Adapter: `adapters/coding_agent_adapter.py`
 - Docs: [docs.mnemix.org/guide](https://docs.mnemix.org/guide/)
 
+This is the preferred integration path for agent runtimes that can execute Python hooks or wrappers. It gives you a fuller memory layer than raw ad hoc CLI usage by standardizing:
+
+- task-start recall
+- structured writeback at task end
+- checkpoint/restore around risky work
+- consistent memory kinds and tags
+
+## Memory Policy
+
+Agents should treat Mnemix as durable project memory, not as a raw transcript dump.
+
+### Recall at the start of work
+
+Recall before planning, coding, review, or documentation tasks:
+
+```bash
+{{mnemix.binary}} --store {{mnemix.store_path}} recall --scope {{mnemix.scope}}
+```
+
+If recall is too broad, search for a specific concept:
+
+```bash
+{{mnemix.binary}} --store {{mnemix.store_path}} search --text "schema" --scope {{mnemix.scope}}
+```
+
+### Record at the end of meaningful work
+
+Write memory for:
+
+- decisions that constrain future implementation
+- verified facts that were expensive to discover
+- repeatable procedures
+- warnings about traps or regressions
+- concise end-of-task summaries
+
+Do not write:
+
+- secrets
+- raw logs or transcript dumps
+- speculative or unverified claims
+- trivial edits with no future retrieval value
+
+### Checkpoint before risky changes
+
+```bash
+{{mnemix.binary}} --store {{mnemix.store_path}} checkpoint --name before-change
+```
+
+Use checkpoints before broad refactors, migrations, destructive changes, or large generated edits.
+
 ## Quick Reference
 
 ```bash
@@ -65,6 +115,26 @@ Suggested kinds for coding workflows:
 | `fact` | Verified project facts |
 | `procedure` | Repeatable setup or debugging steps |
 | `warning` | Pitfalls, regressions, or traps |
+
+Recommended tag families:
+
+- memory type: `decision`, `summary`, `procedure`, `warning`
+- work type: `coding`, `review`, `docs`, `migration`
+- subsystem: backend, frontend, auth, schema, build, release
+
+## Suggested Adapter Integration
+
+If you are wiring Mnemix into a coding runtime, prefer the official adapter over custom glue code.
+
+The integration model should be:
+
+1. task starts
+2. adapter performs recall for the active scope
+3. agent works with normal project context
+4. adapter writes durable memory at task completion
+5. adapter optionally creates checkpoints before risky operations
+
+This keeps memory behavior consistent across sessions and tools.
 
 ## How It Works
 

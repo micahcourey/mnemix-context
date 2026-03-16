@@ -43,12 +43,23 @@ If you skip this step, you will repeat mistakes from prior sessions.
 {{mnemix.binary}} --store {{mnemix.store_path}} recall --scope {{mnemix.scope}}
 ```
 
+Use recall to load prior implementation decisions, known pitfalls, partial work, and repeatable procedures before editing code.
+
 **After completing a task** — store what you learned:
 ```bash
 {{mnemix.binary}} --store {{mnemix.store_path}} remember --id <id> --scope {{mnemix.scope}} --kind summary --title "<title>" --summary "<summary>" --detail "<detail>" --importance 75 --tag coding --tag summary
 ```
 
 Tags: `bug-fix`, `decision`, `discovery`, `error`, `refactor`, `pattern`
+
+Also record:
+
+- `decision` for architecture or implementation choices
+- `fact` for verified project truths worth reusing
+- `procedure` for repeatable debugging or setup flows
+- `warning` for regression risks or traps
+
+Create a checkpoint before broad refactors, migrations, or risky generated edits.
 
 **Full reference**: Load [skills/mnemix-memory/SKILL.md](skills/mnemix-memory/SKILL.md) for all CLI options and conventions.
 {{/if}}

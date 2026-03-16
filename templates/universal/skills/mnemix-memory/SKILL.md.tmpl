@@ -34,6 +34,14 @@ For Python-based coding workflows, prefer the official coding adapter:
 - Adapter: `adapters/coding_agent_adapter.py`
 - Docs: [docs.mnemix.org/guide](https://docs.mnemix.org/guide/)
 
+Use the adapter when you want your coding agent runtime to:
+
+- recall relevant memory automatically at task start
+- checkpoint before risky edits
+- restore after a failed experiment
+- write structured memory at task completion
+- maintain a clearer distinction between transient chat context and durable memory
+
 ## When This Skill Activates
 
 - At the start of a session when prior decisions or implementation context may matter
@@ -43,19 +51,45 @@ For Python-based coding workflows, prefer the official coding adapter:
 
 ## Recommended Workflow
 
-### 1. Recall
+### 1. Recall at task start
 
 ```bash
 {{mnemix.binary}} --store {{mnemix.store_path}} recall --scope {{mnemix.scope}}
 ```
 
-### 2. Search when needed
+Recall before planning, coding, review, or documentation work.
+
+Prioritize prior memories about:
+
+- active branch or feature history
+- architectural decisions that constrain the task
+- known pitfalls, regressions, or broken patterns
+- repeatable debugging or setup procedures
+- previous partial work that should be continued instead of redone
+
+### 2. Search when recall is not enough
 
 ```bash
 {{mnemix.binary}} --store {{mnemix.store_path}} search --text "middleware" --scope {{mnemix.scope}}
 ```
 
-### 3. Remember durable outcomes
+Search when you need a specific prior fact, decision, or procedure.
+
+### 3. Checkpoint before risky work
+
+```bash
+{{mnemix.binary}} --store {{mnemix.store_path}} checkpoint --name before-change
+```
+
+Use checkpoints before:
+
+- broad refactors
+- migration or upgrade work
+- destructive edits
+- generated changes across many files
+- experiments where rollback may be necessary
+
+### 4. Remember durable outcomes
 
 ```bash
 {{mnemix.binary}} --store {{mnemix.store_path}} remember \
@@ -69,11 +103,18 @@ For Python-based coding workflows, prefer the official coding adapter:
   --tag coding --tag summary
 ```
 
-### 4. Checkpoint before risky changes
+Write memory only when the information will help a future session.
 
-```bash
-{{mnemix.binary}} --store {{mnemix.store_path}} checkpoint --name before-change
-```
+## Recall Rules
+
+At the start of work, recall and answer:
+
+1. What decisions already constrain this task?
+2. What implementation or debugging history already exists?
+3. What warnings or regressions should not be repeated?
+4. Is there a known procedure I should follow instead of rediscovering it?
+
+If recall returns nothing useful, continue normally. Do not fabricate memory.
 
 ## Memory Kinds
 
@@ -84,6 +125,38 @@ For Python-based coding workflows, prefer the official coding adapter:
 | `fact` | Verified project facts |
 | `procedure` | Repeatable debugging or setup steps |
 | `warning` | Pitfalls, regressions, or risky areas |
+
+## What To Record
+
+Record only durable information with future retrieval value.
+
+### Record `decision` when
+
+- a pattern or architecture choice was selected
+- a tradeoff was evaluated and one path chosen
+- a naming, schema, API, or workflow convention was settled
+
+### Record `fact` when
+
+- you verified a non-obvious truth from the codebase
+- you confirmed where key logic lives
+- you confirmed a dependency, entry point, or operational constraint
+
+### Record `procedure` when
+
+- you found a reliable sequence to debug, build, release, migrate, or recover
+- the steps are likely to be reused by future sessions
+
+### Record `warning` when
+
+- a trap caused wasted time
+- a known bad pattern or regression vector was discovered
+- an area requires caution before editing
+
+### Record `summary` when
+
+- a meaningful unit of work finished
+- future sessions will benefit from a concise handoff
 
 ## What To Store
 
@@ -101,3 +174,36 @@ Avoid storing:
 - noisy transcript dumps
 - speculative facts you have not verified
 - low-value edits with no future retrieval value
+
+## Recommended Fields
+
+Keep memories compact and structured:
+
+- `title`: short and searchable
+- `summary`: one-sentence takeaway
+- `detail`: enough context to reuse the memory later
+- `kind`: choose the most specific durable category
+- `importance`: raise for architecture, risky warnings, or repeat-use procedures
+- `tags`: component, domain area, and memory type
+
+Good tags:
+
+- `decision`
+- `warning`
+- `procedure`
+- `bug-fix`
+- `review`
+- `docs`
+- `migration`
+- component or subsystem names
+
+## Adapter Guidance
+
+If your coding environment supports Python-based agent hooks, integrate the official `coding_agent_adapter.py` instead of hand-rolling memory calls.
+
+Use the adapter to:
+
+- perform recall automatically at task start
+- write structured memories automatically at task end
+- manage checkpoints around risky operations
+- keep memory conventions consistent across different coding agents

@@ -1,0 +1,62 @@
+# Setup Assistant
+
+You are configuring **Mnemix Context** for `{{project.name}}`.
+
+Your job is to bootstrap or refresh the toolkit configuration for this repository without making assumptions that should come from the codebase or the user.
+
+## Workflow
+
+### 1. Discover first
+
+Inspect the repository to infer:
+
+- project name and purpose
+- frontend/backend frameworks
+- runtime and language versions
+- database and cloud usage
+- auth patterns
+- testing frameworks
+- important entry points, scripts, and directories
+
+### 2. Ask targeted follow-up questions
+
+Only ask for details that cannot be detected reliably from the repo, especially:
+
+- project description and organization name
+- branch naming and commit conventions
+- coverage target
+- key domain entities and roles
+- sensitive data and optional compliance requirements
+- data isolation strategy
+- which AI platforms should be enabled
+
+### 3. Update configuration
+
+Edit `toolkit.config.yaml` so it matches the repository and the user's answers.
+
+### 4. Generate output
+
+Run:
+
+```bash
+python3 setup/generate.py --config toolkit.config.yaml
+```
+
+### 5. Verify progressive disclosure output
+
+Confirm the generated repository contains:
+
+1. `AGENTS.md` as the L1 router
+2. `instructions/` as L2 on-demand guidance
+3. `context/` as L3 project knowledge
+4. `skills/` for task-specific activation
+5. platform-native files for any enabled native tools
+
+### 6. Summarize the result
+
+Report:
+
+- what was auto-detected
+- what was provided manually
+- which platforms were enabled
+- which context files still need project-specific content
