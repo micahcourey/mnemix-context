@@ -87,6 +87,9 @@ Mnemix records bugs fixed, decisions made, patterns discovered, and errors resol
 1. **Start** with `{{mnemix.binary}} --store {{mnemix.store_path}} recall --scope {{mnemix.scope}}` to check prior context
 2. **End** by persisting a memory with `{{mnemix.binary}} --store {{mnemix.store_path}} remember ...`
 
+Recall prior `decision`, `fact`, `procedure`, `warning`, and `summary` memories that could affect the task.
+Record new memory only when it will help a future session avoid rediscovery, repeat a useful procedure, or preserve a meaningful decision.
+
 Skipping recall means repeating mistakes from prior sessions. This is not optional.
 The store is local, gitignored, and per-developer. It does not affect project files.
 See [skills/mnemix-memory/SKILL.md](skills/mnemix-memory/SKILL.md) for full CLI reference.

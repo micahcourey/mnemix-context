@@ -38,10 +38,14 @@ You MUST run recall before doing ANY other work. This is not optional.
 {{mnemix.binary}} --store {{mnemix.store_path}} recall --scope {{mnemix.scope}}
 ```
 
+Use recall to load prior architecture decisions, constraints, open questions, and migration history before planning.
+
 **After completing a task**:
 ```bash
 {{mnemix.binary}} --store {{mnemix.store_path}} remember --id <id> --scope {{mnemix.scope}} --kind summary --title "<title>" --summary "<summary>" --detail "<detail>" --importance 75 --tag coding --tag summary
 ```
+
+Prefer `decision` for approved design choices, `warning` for known risk areas, and `summary` for handoff-ready planning outcomes.
 {{/if}}
 
 ## My Approach

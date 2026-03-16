@@ -28,6 +28,11 @@ def main() -> int:
     print("Examples:")
     print(f"  {args.binary} --store {args.store_path} recall --scope repo:your-project")
     print(f"  {args.binary} --store {args.store_path} search --text \"decision\" --scope repo:your-project")
+    print(f"  {args.binary} --store {args.store_path} checkpoint --name before-change")
+    print()
+    print("Integration:")
+    print("  For Python-based coding agents, prefer the official Mnemix coding agent adapter:")
+    print("  https://github.com/micahcourey/mnemix/blob/main/adapters/coding_agent_adapter.py")
     return 0
 
 

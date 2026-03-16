@@ -124,17 +124,6 @@ Use native integrations where available; adapters point other tools back to the 
 | **Cline** | Adapter | `.ai/clinerules` |
 | **Windsurf** | Adapter | `.ai/windsurfrules` |
 
-### Expected Impact
-
-| Metric | Traditional | AI-Powered | Improvement |
-|--------|-------------|------------|-------------|
-| **Feature Development** | 5–7 days | 2–3 days | ~60% faster |
-| **Code Review Iterations** | 3–4 rounds | 1–2 rounds | ~50% fewer |
-| **Test Coverage** | 60–70% | 90%+ | +30% |
-| **Security Findings** | Post-PR | Pre-commit | Earlier detection |
-| **Accessibility Issues** | QA phase | Development | Earlier detection |
-| **Documentation** | Often skipped | Auto-generated | 100% coverage |
-
 ---
 
 ## Getting Started
@@ -187,6 +176,13 @@ Then reload VS Code so it picks up the new agent:
 > **Cmd+Shift+P** → `Developer: Reload Window`
 
 This places the setup agent where Copilot can find it. The rest of Mnemix Context stays in its own repo — only this one file gets copied.
+
+### Other Setup Paths
+
+If you are not using GitHub Copilot for setup:
+
+- Use [setup/SETUP.md](/Users/micah/Projects/mnemix-context/setup/SETUP.md) as the tool-neutral setup workflow for Codex, OpenCode, Cursor, Claude Code, Cline, or Windsurf
+- After generation, native `setup` agents are available for Copilot, OpenCode, and Codex in the generated `.ai/` output
 
 ### Step 5: Run the Bootstrap Agent (Recommended)
 
@@ -406,27 +402,31 @@ your-project/
 │   │   ├── update.agent.md              #   Updater agent (copy to agents/ when needed)
 │   │   └── README.md                    #   Update workflow documentation
 │   ├── copilot-instructions.md          # Copilot config (references AGENTS.md)
-│   ├── agents/                          # 4 Copilot agent personas
+│   ├── SETUP.md                         # Tool-neutral setup workflow
+│   ├── agents/                          # 5 Copilot agent personas
 │   │   ├── engineer.agent.md
 │   │   ├── reviewer.agent.md
 │   │   ├── documentation.agent.md
 │   │   ├── architect.agent.md
+│   │   ├── setup.agent.md
 │   ├── skills/                          # 12 auto-activating skills
 │   │   └── */SKILL.md
 │   ├── opencode/                        # OpenCode native integration
 │   │   ├── opencode.json                #   OpenCode project config
-│   │   └── agents/                      #   4 OpenCode agent definitions
+│   │   └── agents/                      #   5 OpenCode agent definitions
 │   │       ├── engineer.md
 │   │       ├── reviewer.md
 │   │       ├── documentation.md
 │   │       ├── architect.md
+│   │       ├── setup.md
 │   ├── codex/                           # Codex CLI native integration
 │   │   ├── config.toml                  #   Codex project config
-│   │   └── agents/                      #   4 Codex agent role configs
+│   │   └── agents/                      #   5 Codex agent role configs
 │   │       ├── engineer.toml
 │   │       ├── reviewer.toml
 │   │       ├── documentation.toml
 │   │       ├── architect.toml
+│   │       ├── setup.toml
 │   ├── CLAUDE.md                        # Claude Code adapter
 │   ├── cursor-rules.mdc                # Cursor adapter
 │   ├── clinerules                       # Cline adapter
@@ -468,6 +468,7 @@ mnemix-context/
 ├── setup/
 │   ├── generate.py                  # Template engine (platform-aware)
 │   ├── generate.sh                  # Shell wrapper (handles Python/PyYAML)
+│   ├── SETUP.md                     # Tool-neutral bootstrap workflow
 │   ├── bootstrap.agent.md           # Interactive AI-assisted setup agent
 │   └── examples/                    # Starter configs
 │       ├── angular-node-aws.yaml
@@ -475,6 +476,7 @@ mnemix-context/
 ├── templates/
 │   ├── universal/                   # Open standards (all platforms)
 │   │   ├── AGENTS.md.tmpl           # L1 Router template
+│   │   ├── SETUP.md.tmpl            # Tool-neutral generated setup workflow
 │   │   ├── instructions/            # L2 Instruction module templates
 │   │   │   ├── security-patterns.md.tmpl
 │   │   │   ├── coding-standards.md.tmpl
@@ -487,13 +489,13 @@ mnemix-context/
 │   │   └── skills/*/SKILL.md.tmpl   # 12 skill templates
 │   ├── copilot/                     # GitHub Copilot specific
 │   │   ├── copilot-instructions.md.tmpl
-│   │   ├── agents/*.agent.md.tmpl   # 4 wrapper templates (frontmatter + include)
+│   │   ├── agents/*.agent.md.tmpl   # 5 wrapper templates (frontmatter + include)
 │   ├── opencode/                    # OpenCode native integration
 │   │   ├── opencode.json.tmpl       #   Project config (model, agents.path, etc.)
-│   │   └── agents/*.md.tmpl         # 4 agent wrapper templates
+│   │   └── agents/*.md.tmpl         # 5 agent wrapper templates
 │   ├── codex/                       # Codex CLI native integration
 │   │   ├── config.toml.tmpl         #   Project config (approval_policy, sandbox_mode)
-│   │   └── agents/*.toml.tmpl       # 7 agent role config templates
+│   │   └── agents/*.toml.tmpl       # 5 agent role config templates
 │   ├── shared/                      # Canonical reusable content
 │   │   └── personas/*.md.tmpl       # 4 persona content templates
 │   └── adapters/                    # Platform adapter pointers
@@ -589,5 +591,4 @@ Changes to docs, examples, CI workflows, and the config template don't require a
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
 
