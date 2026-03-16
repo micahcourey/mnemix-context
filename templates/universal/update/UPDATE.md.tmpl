@@ -1,0 +1,30 @@
+# Update Context Files
+
+Use this file with any coding assistant to refresh `.ai/context/` as the project evolves, without re-running the full bootstrap workflow.
+
+## When to Run
+
+Run an update when:
+
+- database schema changes
+- API endpoints are added or removed
+- roles or permissions change
+- important directories, entry points, or scripts move
+- framework/runtime versions drift
+- the generated context looks stale
+
+## Workflow
+
+1. Read `.ai/update/README.md` for the full update strategy
+2. Inspect `.ai/context/` and `.ai/update/.last-updated`
+3. Re-scan the codebase for current schema, endpoints, roles, glossary terms, and project structure
+4. Present a change report before applying updates
+5. Update structured data files directly when approved
+6. Suggest diffs for prose files instead of overwriting them blindly
+7. Summarize what changed and recommend committing the updated `.ai/` output
+
+## Starter Prompt
+
+```text
+Use .ai/update/README.md and .ai/update/UPDATE.md to refresh the generated context files. Re-scan the repository, show me the drift, and only apply approved updates.
+```

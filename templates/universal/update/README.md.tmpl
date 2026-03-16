@@ -1,30 +1,35 @@
 # Updating Context Files
 
-This directory contains the **Context Updater** agent and update metadata. Use it to keep your `.ai/context/` files in sync as your project evolves — without re-running the full bootstrap process.
+This directory contains the **Context Updater** workflow, the optional update agent, and update metadata. Use it to keep your `.ai/context/` files in sync as your project evolves — without re-running the full bootstrap process.
 
-## Who Should Run Updates
+You can use this module from:
 
-Context updates are typically performed by the **Tech Lead or Architect**, not every developer. The workflow is:
-
-1. Tech lead runs the update agent
-2. Reviews and approves changes
-3. Commits updated context files
-4. Creates a PR for team review
-5. After merge, the full dev team pulls the latest context
+- GitHub Copilot, by temporarily copying in the update agent
+- another coding assistant, by following `UPDATE.md`
+- a manual review flow, by reading the update docs and running the helper scripts yourself
 
 ## When to Update
 
-Run the update agent when:
+Run an update when:
 - Database schema has changed (new tables, columns, migrations)
 - New API endpoints have been added or removed
 - Roles or permissions have been modified
-- New repositories have been added to the workspace
 - Framework or dependency versions have been upgraded
-- The team suspects context files are stale
+- The context files look stale
 
 ## How to Run
 
-### 1. Copy the update agent into your agents directory
+### Tool-Neutral Path
+
+Open `.ai/update/UPDATE.md` in your coding assistant and start with:
+
+```text
+Use .ai/update/README.md and .ai/update/UPDATE.md to refresh the generated context files. Re-scan the repository, show me the drift, and only apply approved updates.
+```
+
+### GitHub Copilot Path
+
+1. Copy the update agent into your agents directory
 
 ```bash
 cp .ai/update/update.agent.md .github/agents/context-updater.agent.md
@@ -34,7 +39,7 @@ Reload VS Code:
 
 > **Cmd+Shift+P** → `Developer: Reload Window`
 
-### 2. Run the Context Updater
+2. Run the Context Updater
 
 1. Open **Copilot Chat**
 2. Select **Claude Sonnet 4.6** (or Opus 4.6 for large projects)
@@ -49,7 +54,7 @@ The agent will:
 - Suggest changes to prose files (`.md`) for your review
 - Detect version drift in `toolkit.config.yaml`
 
-### 3. Review and commit
+### Review and commit
 
 ```bash
 git add .ai/
@@ -57,15 +62,15 @@ git commit -m "chore: update AI context files"
 git push origin your-branch
 ```
 
-### 4. Clean up (optional)
+### Clean up (optional)
 
-Remove the update agent from the agents directory after the PR is merged — it doesn't need to be in every developer's agent dropdown:
+If you copied the update agent into `.github/agents/`, remove it when you're done:
 
 ```bash
 rm .github/agents/context-updater.agent.md
 ```
 
-It remains here in `.ai/update/` for next time.
+The underlying update workflow remains here in `.ai/update/` for the next run.
 
 ## Update Metadata
 
@@ -130,11 +135,15 @@ git commit -m "chore: upgrade mnemix-context to vX.Y.Z"
 
 ### Via the Context Updater Agent
 
+If you are using Copilot:
+
 1. Open **Copilot Chat** → select **Context Updater**
 2. Say **"Update context files"**
 3. The agent checks for toolkit upgrades first (Phase 0)
 4. If upgrades are available, it previews them and asks for approval
 5. Then proceeds to the normal context update flow
+
+If you are using another tool, use `.ai/update/UPDATE.md` as the equivalent entrypoint.
 
 ### File Categories
 
@@ -147,4 +156,4 @@ git commit -m "chore: upgrade mnemix-context to vX.Y.Z"
 | `toolkit.config.yaml` | **Suggest only** — show drift | Yes — user decides |
 | Instructions / Adapters | Skip unless config changes | N/A |
 
-**Key guarantee:** The agent never overwrites prose `.md` files without explicit approval. Your team's custom documentation is always preserved.
+**Key guarantee:** The updater never overwrites prose `.md` files without explicit approval. Your custom documentation is always preserved.
